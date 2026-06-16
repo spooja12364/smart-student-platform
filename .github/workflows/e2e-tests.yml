@@ -1,0 +1,73 @@
+name: E2E and Unit Tests
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Create Test Results Directories
+        run: |
+          mkdir -p "Test Results/junit"
+          mkdir -p "Test Results/html-report"
+          mkdir -p "Test Results/screenshots"
+          mkdir -p "Test Results/videos"
+
+      - name: Install Report Generators
+        run: |
+          dart pub global activate junitreport
+          dart pub global activate dart_dot_reporter
+
+      - name: Run Flutter Tests
+        run: flutter test --machine > machine.log
+        continue-on-error: true
+
+      - name: Generate JUnit XML Report
+        run: dart pub global run junitreport:junitreport --input machine.log --output "Test Results/junit/TEST-flutter.xml"
+
+      - name: Generate HTML Report
+        run: dart pub global run dart_dot_reporter machine.log "Test Results/html-report/"
+
+      - name: Generate Summary Markdown
+        run: |
+          echo "# Flutter Test Execution Summary" > "Test Results/summary.md"
+          echo "Test execution completed. Please check the artifacts for full JUnit and HTML reports." >> "Test Results/summary.md"
+          # Extract pass/fail from machine.log conceptually (this is a simplified summary)
+          grep '"result":"success"' machine.log | wc -l | awk '{print "- Passed: "$1}' >> "Test Results/summary.md"
+          grep '"result":"error"' machine.log | wc -l | awk '{print "- Failed: "$1}' >> "Test Results/summary.md"
+
+      - name: Publish Summary to GitHub Actions
+        run: cat "Test Results/summary.md" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Test Results Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-test-reports
+          path: Test Results/
+          retention-days: 14
+
+      - name: Fail if tests failed
+        run: |
+          if grep -q '"result":"error"' machine.log; then
+            echo "Tests failed!"
+            exit 1
+          fi

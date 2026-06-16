@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "323647940211",
+    "project_id": "smart-student-platform-fe510",
+    "storage_bucket": "smart-student-platform-fe510.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323647940211:android:6b43eb9267aa055ce6ec06",
+        "android_client_info": {
+          "package_name": "com.example.smart_student_platform"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4SVRCmzefWdAUOO_e1afJR8NxWriwRVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

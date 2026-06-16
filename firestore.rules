@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Require users to be authenticated for any action
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if the user is operating on their own data
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // users collection
+    match /users/{userId} {
+      allow read: if true; // Allow anyone to read user profiles (needed for registration validation)
+      allow create: if true; // Temporarily allow anyone to create to debug timeout issue
+      allow update: if isOwner(userId); // Users can only update their own profile
+      allow delete: if isOwner(userId); // Users can delete their own profile
+    }
+
+    // skills collection
+    match /skills/{skillId} {
+      allow read: if isAuthenticated(); // Anyone authenticated can read skills (for matching)
+      // Allow create/update if the document's userId matches the sender
+      allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // connections collection
+    match /connections/{connectionId} {
+      allow read: if isAuthenticated(); 
+      // Allow create if 'from' is the sender
+      allow create: if isAuthenticated() && request.resource.data.from == request.auth.uid;
+      // Allow update if 'to' is the sender (accept/reject) or 'from' (cancel)
+      allow update: if isAuthenticated() && 
+        (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid);
+      allow delete: if isAuthenticated() && 
+        (resource.data.to == request.auth.uid || resource.data.from == request.auth.uid || 
+         resource.data.user1 == request.auth.uid || resource.data.user2 == request.auth.uid);
+    }
+
+    // chats collection (and nested messages)
+    match /chats/{chatId} {
+      allow read, update: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated() && request.auth.uid in request.resource.data.participants;
+      
+      match /messages/{messageId} {
+        // Can read/write messages if they can read the parent chat
+        allow read: if isAuthenticated() && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    // groups collection
+    match /groups/{groupId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      // Only allow group creator/admins to modify in a real scenario. 
+      // Here we just ensure auth.
+      allow update: if isAuthenticated();
+    }
+
+    // notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId); // Only read own notifications
+      // Anyone can create a notification for another user
+      allow create: if isAuthenticated();
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+  }
+}
