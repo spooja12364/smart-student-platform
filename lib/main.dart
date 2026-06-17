@@ -12,6 +12,7 @@ import 'package:smart_student_platform/screens/connections.dart';
 import 'package:smart_student_platform/screens/chat_list.dart';
 import 'package:smart_student_platform/screens/group_chat_list.dart';
 import 'package:smart_student_platform/screens/notifications.dart';
+import 'package:smart_student_platform/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,8 +32,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Smart Student Platform',
+      themeMode: ThemeMode.system,
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryPurple),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryPurple, brightness: Brightness.dark),
       ),
       initialRoute: FirebaseAuth.instance.currentUser != null ? '/dashboard' : '/',
       routes: {
@@ -41,8 +50,8 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterPage(),
         '/dashboard': (context) => const DashboardPage(),
         '/profile': (context) => const ProfilePage(),
-        '/my_skills': (context) => const MySkillsPage(),
-        '/connections': (context) => const ConnectionsPage(),
+        '/my_skills': (context) => const MySkills(),
+        '/connections': (context) => const Connections(),
         '/chats': (context) => const ChatListPage(),
         '/groups': (context) => const GroupChatListPage(),
         '/notifications': (context) => const NotificationsPage(),

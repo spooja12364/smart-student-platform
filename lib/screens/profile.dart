@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:smart_student_platform/theme.dart';
-import 'package:smart_student_platform/login.dart';
+import 'package:smart_student_platform/screens/edit_profile.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -12,318 +12,131 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final user = FirebaseAuth.instance.currentUser;
+  final User? currentUser = FirebaseAuth.instance.currentUser;
+  Map<dynamic, dynamic> _userData = {};
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  void _fetchProfile() {
+    if (currentUser == null) return;
+    FirebaseDatabase.instance.ref("users/${currentUser!.uid}").onValue.listen((event) {
+      if (!mounted) return;
+      if (event.snapshot.value != null) {
+        setState(() {
+          _userData = event.snapshot.value as Map<dynamic, dynamic>;
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+      }
+    });
+  }
+
+  Future<void> _logout() async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(user?.uid).snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-        if (!snapshot.data!.exists) return const Center(child: Text("Profile not found", style: TextStyle(color: Colors.white)));
+    if (currentUser == null) return const Center(child: Text("Please login."));
 
-        final data = snapshot.data!.data() as Map<String, dynamic>;
-
-        return SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+    return Scaffold(
+      backgroundColor: AppTheme.darkBg,
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 50,
-                  backgroundColor: AppTheme.primaryPurple,
-                  child: Icon(Icons.person, size: 60, color: Colors.white),
+                  backgroundColor: AppTheme.primaryBlue,
+                  backgroundImage: _userData['profileImage'] != null && _userData['profileImage'].toString().isNotEmpty
+                      ? NetworkImage(_userData['profileImage'])
+                      : null,
+                  child: _userData['profileImage'] == null || _userData['profileImage'].toString().isEmpty
+                      ? const Icon(Icons.person, size: 60, color: Colors.white)
+                      : null,
                 ),
                 const SizedBox(height: 16),
-                Text(data['fullName'] ?? "Student", style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                Text(data['email'] ?? "", style: const TextStyle(color: AppTheme.textGray)),
+                Text(_userData['name'] ?? 'Student', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
                 const SizedBox(height: 24),
                 
-                _buildInfoCard("Personal Details", [
-                  _infoRow("Username", data['username'] ?? "Not added"),
-                  _infoRow("City", data['city'] ?? "Not added"),
-                  _infoRow("Bio", data['bio'] ?? "No bio available"),
-                ]),
-                const SizedBox(height: 16),
-                _buildInfoCard("Skills", [
-                  if (data['skills'] != null && (data['skills'] as List).isNotEmpty)
-                    Wrap(
-                      spacing: 8.0,
-                      children: (data['skills'] as List).map<Widget>((skill) {
-                        return Chip(
-                          label: Text(skill.toString(), style: const TextStyle(color: Colors.white)),
-                          backgroundColor: AppTheme.primaryPurple,
-                        );
-                      }).toList(),
-                    )
-                  else
-                    const Text("No skills added during registration.", style: TextStyle(color: AppTheme.textGray)),
-                ]),
-                const SizedBox(height: 30),
+                _buildInfoCard(),
+                const SizedBox(height: 24),
+
                 SizedBox(
                   width: double.infinity,
                   height: 50,
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.1),
+                      backgroundColor: AppTheme.primaryPurple,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onPressed: () => _showEditProfileDialog(context, data),
-                    icon: const Icon(Icons.edit, color: Colors.white),
-                    label: const Text("Edit Profile", style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white.withOpacity(0.1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: () => _showChangePasswordDialog(context),
-                    icon: const Icon(Icons.lock_reset, color: Colors.white),
-                    label: const Text("Change Password", style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent.withOpacity(0.2),
-                      foregroundColor: Colors.redAccent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: () async {
-                      await FirebaseAuth.instance.signOut();
-                      if (context.mounted) {
-                        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-                      }
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => EditProfilePage(userData: _userData)));
                     },
-                    icon: const Icon(Icons.logout),
-                    label: const Text("Logout"),
+                    child: const Text("Edit Profile", style: TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.redAccent,
+                      side: const BorderSide(color: Colors.redAccent),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    onPressed: _logout,
+                    child: const Text("Logout", style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ],
             ),
           ),
-        );
-      },
     );
   }
 
-  void _showEditProfileDialog(BuildContext context, Map<String, dynamic> data) {
-    final fullNameController = TextEditingController(text: data['fullName'] ?? '');
-    final cityController = TextEditingController(text: data['city'] ?? '');
-    final bioController = TextEditingController(text: data['bio'] ?? '');
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        bool isSaving = false;
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: AppTheme.cardDark,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: const Text("Edit Profile", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: fullNameController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "Full Name",
-                      hintStyle: const TextStyle(color: AppTheme.textGray),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: cityController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "City",
-                      hintStyle: const TextStyle(color: AppTheme.textGray),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: bioController,
-                    maxLines: 3,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "Short Bio",
-                      hintStyle: const TextStyle(color: AppTheme.textGray),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel", style: TextStyle(color: AppTheme.textGray)),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryPurple, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  onPressed: isSaving ? null : () async {
-                    final name = fullNameController.text.trim();
-                    final city = cityController.text.trim();
-                    final bio = bioController.text.trim();
-
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please enter your full name.", style: TextStyle(color: Colors.white)), backgroundColor: Colors.red));
-                      return;
-                    }
-
-                    setDialogState(() => isSaving = true);
-                    try {
-                      await FirebaseFirestore.instance.collection('users').doc(user?.uid).update({
-                        'fullName': name,
-                        'city': city,
-                        'bio': bio,
-                      });
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Profile updated successfully!", style: TextStyle(color: Colors.white)), backgroundColor: Colors.green));
-                    } catch (e) {
-                      setDialogState(() => isSaving = false);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Could not update profile: $e", style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red));
-                    }
-                  },
-                  child: isSaving 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text("Save", style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showChangePasswordDialog(BuildContext context) {
-    final currentPasswordController = TextEditingController();
-    final newPasswordController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        bool isUpdating = false;
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: AppTheme.cardDark,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: const Text("Change Password", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: currentPasswordController,
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "Current Password",
-                      hintStyle: const TextStyle(color: AppTheme.textGray),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: newPasswordController,
-                    obscureText: true,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "New Password (min 6 chars)",
-                      hintStyle: const TextStyle(color: AppTheme.textGray),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.05),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel", style: TextStyle(color: AppTheme.textGray)),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryPurple, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  onPressed: isUpdating ? null : () async {
-                    if (currentPasswordController.text.isEmpty || newPasswordController.text.length < 6) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill all fields correctly (New password min 6 chars).")));
-                      return;
-                    }
-
-                    setDialogState(() => isUpdating = true);
-                    try {
-                      final cred = EmailAuthProvider.credential(email: user!.email!, password: currentPasswordController.text);
-                      await user!.reauthenticateWithCredential(cred);
-                      await user!.updatePassword(newPasswordController.text);
-
-                      if (!context.mounted) return;
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password updated successfully!", style: TextStyle(color: Colors.white)), backgroundColor: Colors.green));
-                    } on FirebaseAuthException catch (e) {
-                      setDialogState(() => isUpdating = false);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${e.message}", style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red));
-                    }
-                  },
-                  child: isUpdating 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text("Update", style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildInfoCard(String title, List<Widget> children) {
+  Widget _buildInfoCard() {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: AppTheme.glassBoxDecoration,
-      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppTheme.cardDark,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(color: AppTheme.primaryBlue, fontSize: 18, fontWeight: FontWeight.bold)),
-          const Divider(color: Colors.white24, height: 24),
-          ...children,
+          _buildInfoRow(Icons.email, "Email", _userData['email'] ?? currentUser?.email ?? ''),
+          const Divider(color: Colors.white10, height: 24),
+          _buildInfoRow(Icons.info_outline, "Bio", _userData['bio'] ?? 'No bio provided.'),
         ],
       ),
     );
   }
 
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(width: 100, child: Text(label, style: const TextStyle(color: AppTheme.textGray))),
-          Expanded(child: Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500))),
-        ],
-      ),
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, color: AppTheme.textGray, size: 20),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: const TextStyle(color: AppTheme.textGray, fontSize: 12)),
+            Text(value.isEmpty ? "Not provided" : value, style: const TextStyle(color: Colors.white, fontSize: 16)),
+          ],
+        )
+      ],
     );
   }
 }

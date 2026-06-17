@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:smart_student_platform/theme.dart';
 import 'package:smart_student_platform/screens/chat_detail.dart';
 import 'package:smart_student_platform/screens/connections.dart';
@@ -17,71 +18,105 @@ class _ChatListPageState extends State<ChatListPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (user == null) {
+      return const Scaffold(
+        backgroundColor: AppTheme.darkBg,
+        body: Center(child: Text('Please login to view chats.', style: TextStyle(color: Colors.white))),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppTheme.darkBg,
       appBar: AppBar(
-        title: const Text("Messages", style: TextStyle(color: Colors.white)),
+        title: const Text("Chats", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('chats')
-            .where('participants', arrayContains: user?.uid)
-            .snapshots(),
+      body: StreamBuilder<DatabaseEvent>(
+        stream: FirebaseDatabase.instance.ref('connections/${user!.uid}/accepted').onValue,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
           }
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return ListView(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text("DEMO PREVIEW (No real chats found)", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
-                ),
-                ListTile(
-                  leading: const CircleAvatar(backgroundColor: AppTheme.primaryPurple, child: Icon(Icons.person, color: Colors.white)),
-                  title: const Text("Sarah Johnson", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  subtitle: const Text("Hey! Can you help me with Flutter?", style: TextStyle(color: AppTheme.textGray)),
-                  trailing: const Icon(Icons.chevron_right, color: AppTheme.textGray),
-                  onTap: () {
-                     Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailPage(chatId: "demo1", otherUserId: "Sarah")));
-                  },
-                ),
-                ListTile(
-                  leading: const CircleAvatar(backgroundColor: AppTheme.primaryBlue, child: Icon(Icons.person, color: Colors.white)),
-                  title: const Text("Alex Smith", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  subtitle: const Text("I just completed the React course!", style: TextStyle(color: AppTheme.textGray)),
-                  trailing: const Icon(Icons.chevron_right, color: AppTheme.textGray),
-                  onTap: () {
-                     Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailPage(chatId: "demo2", otherUserId: "Alex")));
-                  },
-                ),
-              ],
+          if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
+            return const Center(
+              child: Text('No connections yet. Connect with people first.', style: TextStyle(color: AppTheme.textGray)),
             );
           }
 
-          final docs = snapshot.data!.docs;
+          final acceptedMap = Map<String, dynamic>.from(snapshot.data!.snapshot.value as Map);
+          final List<String> connectedUserIds = acceptedMap.keys.toList();
+
+          if (connectedUserIds.isEmpty) {
+            return const Center(
+              child: Text('No connections yet. Connect with people first.', style: TextStyle(color: AppTheme.textGray)),
+            );
+          }
 
           return ListView.builder(
-            itemCount: docs.length,
+            itemCount: connectedUserIds.length,
             itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
-              List participants = data['participants'] ?? [];
-              String otherUserId = participants.firstWhere((id) => id != user?.uid, orElse: () => "Unknown");
+              final otherUserId = connectedUserIds[index];
+              final List<String> uids = [user!.uid, otherUserId];
+              uids.sort();
+              final String chatId = uids.join('_');
 
-              return ListTile(
-                leading: const CircleAvatar(
-                  backgroundColor: AppTheme.primaryPurple,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
-                title: Text("User: ${otherUserId.substring(0, 5)}...", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                subtitle: Text(data['lastMessage'] ?? "Tap to chat", style: const TextStyle(color: AppTheme.textGray)),
-                trailing: const Icon(Icons.chevron_right, color: AppTheme.textGray),
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => ChatDetailPage(chatId: docs[index].id, otherUserId: otherUserId)));
+              return FutureBuilder<DatabaseEvent>(
+                future: FirebaseDatabase.instance.ref('users/$otherUserId').once(),
+                builder: (context, userSnapshot) {
+                  if (!userSnapshot.hasData || userSnapshot.data!.snapshot.value == null) {
+                    return ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: AppTheme.primaryPurple,
+                        child: Icon(Icons.person, color: Colors.white),
+                      ),
+                      title: const Text('Connected user', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                      subtitle: const Text('Tap to open chat', style: TextStyle(color: AppTheme.textGray)),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChatDetailPage(chatId: chatId, otherUserId: otherUserId),
+                          ),
+                        );
+                      },
+                    );
+                  }
+
+                  final otherUser = Map<String, dynamic>.from(userSnapshot.data!.snapshot.value as Map);
+                  final name = (otherUser['fullName'] ?? otherUser['name'] ?? 'Student').toString();
+                  final profileImage = (otherUser['profilePicture'] ?? otherUser['profileImage'] ?? '').toString();
+
+                  return StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance.collection('chats').doc(chatId).snapshots(),
+                    builder: (context, chatSnapshot) {
+                      String subtitle = 'Start chatting';
+                      if (chatSnapshot.hasData && chatSnapshot.data!.exists) {
+                        final chatData = chatSnapshot.data!.data() as Map<String, dynamic>;
+                        subtitle = chatData['lastMessage'] ?? 'Start chatting';
+                      }
+
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: AppTheme.primaryPurple,
+                          backgroundImage: profileImage.isNotEmpty ? NetworkImage(profileImage) : null,
+                          child: profileImage.isEmpty ? const Icon(Icons.person, color: Colors.white) : null,
+                        ),
+                        title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        subtitle: Text(subtitle, style: const TextStyle(color: AppTheme.textGray)),
+                        trailing: const Icon(Icons.chevron_right, color: AppTheme.textGray),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatDetailPage(chatId: chatId, otherUserId: otherUserId, otherUserName: name),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  );
                 },
               );
             },
@@ -90,9 +125,9 @@ class _ChatListPageState extends State<ChatListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.primaryBlue,
-        child: const Icon(Icons.message, color: Colors.white),
+        child: const Icon(Icons.person_add, color: Colors.white),
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const ConnectionsPage()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const Connections()));
         },
       ),
     );

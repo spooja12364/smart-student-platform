@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_student_platform/theme.dart';
 import 'package:smart_student_platform/screens/dashboard_home.dart';
 import 'package:smart_student_platform/screens/my_skills.dart';
-import 'package:smart_student_platform/screens/ai_matching.dart';
 import 'package:smart_student_platform/screens/connections.dart';
 import 'package:smart_student_platform/screens/chat_list.dart';
-import 'package:smart_student_platform/screens/group_chat_list.dart';
-import 'package:smart_student_platform/screens/search_discover.dart';
-import 'package:smart_student_platform/screens/notifications.dart';
 import 'package:smart_student_platform/screens/profile.dart';
-import 'package:smart_student_platform/login.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -26,8 +20,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   final List<Widget> _pages = [
     const DashboardHome(),
-    const SearchDiscover(),
-    const AIMatching(),
+    const MySkills(),
+    const Connections(),
+    const ChatListPage(),
     const ProfilePage(),
   ];
 
@@ -38,14 +33,11 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Smart Student",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: const Text("Smart Student", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {
-              Navigator.pushNamed(context, '/notifications');
-            },
+            onPressed: () {},
           ),
         ],
         iconTheme: const IconThemeData(color: Colors.white),
@@ -75,10 +67,9 @@ class _DashboardPageState extends State<DashboardPage> {
           type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.search), label: 'Discover'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.auto_awesome), label: 'Match'),
+            BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Skills'),
+            BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Connections'),
+            BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chats'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
         ),
@@ -104,8 +95,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 const CircleAvatar(
                   radius: 30,
                   backgroundColor: Colors.white,
-                  child:
-                      Icon(Icons.person, size: 40, color: AppTheme.primaryBlue),
+                  child: Icon(Icons.person, size: 40, color: AppTheme.primaryBlue),
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -115,40 +105,59 @@ class _DashboardPageState extends State<DashboardPage> {
               ],
             ),
           ),
-          _drawerItem(
-              Icons.star,
-              "My Skills",
-              () => Navigator.pushNamed(context, '/my_skills')),
-          _drawerItem(
-              Icons.people,
-              "Connections",
-              () => Navigator.pushNamed(context, '/connections')),
-          _drawerItem(
-              Icons.chat,
-              "Chats",
-              () => Navigator.pushNamed(context, '/chats')),
-          _drawerItem(
-              Icons.groups,
-              "Groups",
-              () => Navigator.pushNamed(context, '/groups')),
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.white),
+            title: const Text("Profile", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              setState(() {
+                _selectedIndex = 4; // Assuming 4 is Profile
+              });
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.star, color: Colors.white),
+            title: const Text("Add Skills", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() {
+                _selectedIndex = 1; // Assuming 1 is Skills
+              });
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.people, color: Colors.white),
+            title: const Text("Connections", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() {
+                _selectedIndex = 2; // Assuming 2 is Connections/Chat
+              });
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.chat, color: Colors.white),
+            title: const Text("Chats", style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              setState(() {
+                _selectedIndex = 3;
+              });
+            },
+          ),
           const Divider(color: Colors.white24),
-          _drawerItem(Icons.logout, "Logout", () async {
-            await FirebaseAuth.instance.signOut();
-            if (mounted) {
-              Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-            }
-          }, color: Colors.redAccent),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.redAccent),
+            title: const Text("Logout", style: TextStyle(color: Colors.redAccent)),
+            onTap: () async {
+              await FirebaseAuth.instance.signOut();
+              if (mounted) {
+                Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+              }
+            },
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _drawerItem(IconData icon, String title, VoidCallback onTap,
-      {Color color = Colors.white}) {
-    return ListTile(
-      leading: Icon(icon, color: color),
-      title: Text(title, style: TextStyle(color: color)),
-      onTap: onTap,
     );
   }
 }

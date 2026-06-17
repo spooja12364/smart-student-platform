@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_student_platform/theme.dart';
 import 'package:smart_student_platform/screens/create_group.dart';
+import 'package:smart_student_platform/screens/group_chat_detail.dart';
 
 class GroupChatListPage extends StatefulWidget {
   const GroupChatListPage({super.key});
@@ -181,8 +182,18 @@ class _GroupChatListPageState extends State<GroupChatListPage> {
                       backgroundColor: AppTheme.primaryPurple,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     ),
-                    onPressed: () {},
-                    child: const Text("Join", style: TextStyle(color: Colors.white)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => GroupChatDetailPage(
+                            groupId: docs[index].id,
+                            groupName: data['name'] ?? "Group",
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text("Join / Chat", style: TextStyle(color: Colors.white)),
                   ),
                 ),
               );

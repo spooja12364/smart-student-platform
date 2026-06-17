@@ -1,192 +1,307 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:smart_student_platform/theme.dart';
 import 'package:smart_student_platform/screens/chat_detail.dart';
 
-class ConnectionsPage extends StatefulWidget {
-  const ConnectionsPage({super.key});
+class Connections extends StatefulWidget {
+  const Connections({super.key});
 
   @override
-  State<ConnectionsPage> createState() => _ConnectionsPageState();
+  State<Connections> createState() => _ConnectionsState();
 }
 
-class _ConnectionsPageState extends State<ConnectionsPage> with SingleTickerProviderStateMixin {
+class _ConnectionsState extends State<Connections> with SingleTickerProviderStateMixin {
+  final User? currentUser = FirebaseAuth.instance.currentUser;
   late TabController _tabController;
-  final user = FirebaseAuth.instance.currentUser;
+  
+  List<Map<dynamic, dynamic>> _allUsers = [];
+  List<Map<dynamic, dynamic>> _searchResults = [];
+  Map<String, dynamic> _myConnections = {};
+  
+  String _searchQuery = "";
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    if (currentUser != null) {
+      _fetchData();
+    }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  void _fetchData() {
+    // Listen to all users
+    FirebaseDatabase.instance.ref("users").onValue.listen((event) {
+      if (!mounted) return;
+      if (event.snapshot.value != null) {
+        final data = event.snapshot.value as Map<dynamic, dynamic>;
+        List<Map<dynamic, dynamic>> usersList = [];
+        data.forEach((key, value) {
+          if (key != currentUser!.uid) {
+            value['uid'] = key;
+            usersList.add(value);
+          }
+        });
+        setState(() {
+          _allUsers = usersList;
+          _updateSearchResults();
+          _isLoading = false;
+        });
+      }
+    });
+
+    // Listen to my connections
+    FirebaseDatabase.instance.ref("connections/${currentUser!.uid}").onValue.listen((event) {
+      if (!mounted) return;
+      if (event.snapshot.value != null) {
+        setState(() {
+          _myConnections = Map<String, dynamic>.from(event.snapshot.value as Map);
+        });
+      } else {
+        setState(() {
+          _myConnections = {};
+        });
+      }
+    });
+  }
+
+  void _updateSearchResults() {
+    if (_searchQuery.isEmpty) {
+      _searchResults = _allUsers;
+    } else {
+      _searchResults = _allUsers.where((u) {
+        final skills = u['skills'];
+        if (skills is List) {
+          for (var s in skills) {
+            if (s is Map && s['name'] != null) {
+              final skillName = s['name'].toString().toLowerCase();
+              if (skillName.contains(_searchQuery.toLowerCase())) {
+                return true;
+              }
+            } else if (s is String) {
+              if (s.toLowerCase().contains(_searchQuery.toLowerCase())) {
+                return true;
+              }
+            }
+          }
+        } else if (skills is String) {
+           return skills.toLowerCase().contains(_searchQuery.toLowerCase());
+        }
+        return false;
+      }).toList();
+    }
+  }
+
+  Future<void> _sendRequest(String targetUid) async {
+    await FirebaseDatabase.instance.ref("connections/$targetUid/requests/${currentUser!.uid}").set(true);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Request sent!")));
+  }
+
+  Future<void> _acceptRequest(String requesterUid) async {
+    // Add to my accepted
+    await FirebaseDatabase.instance.ref("connections/${currentUser!.uid}/accepted/$requesterUid").set(true);
+    // Remove from my requests
+    await FirebaseDatabase.instance.ref("connections/${currentUser!.uid}/requests/$requesterUid").remove();
+    
+    // Add me to their accepted
+    await FirebaseDatabase.instance.ref("connections/$requesterUid/accepted/${currentUser!.uid}").set(true);
+  }
+
+  Future<void> _rejectRequest(String requesterUid) async {
+    await FirebaseDatabase.instance.ref("connections/${currentUser!.uid}/requests/$requesterUid").remove();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (currentUser == null) {
+      return const Center(child: Text("Please login.", style: TextStyle(color: Colors.white)));
+    }
+
+    final requestsMap = _myConnections['requests'] as Map? ?? {};
+    final acceptedMap = _myConnections['accepted'] as Map? ?? {};
+    
+    final requestUsers = _allUsers.where((u) => requestsMap.containsKey(u['uid'])).toList();
+    final connectedUsers = _allUsers.where((u) => acceptedMap.containsKey(u['uid'])).toList();
+
     return Scaffold(
       backgroundColor: AppTheme.darkBg,
-      appBar: AppBar(
-        title: const Text("Connections", style: TextStyle(color: Colors.white)),
-        backgroundColor: AppTheme.cardDark,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppTheme.primaryPurple,
-          labelColor: Colors.white,
-          unselectedLabelColor: AppTheme.textGray,
-          tabs: const [
-            Tab(text: "Connected"),
-            Tab(text: "Pending"),
-            Tab(text: "Sent"),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(160),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: TextField(
+                style: const TextStyle(color: Colors.white),
+                onChanged: (val) {
+                  setState(() {
+                    _searchQuery = val;
+                    _updateSearchResults();
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: "Search by skill...",
+                  hintStyle: const TextStyle(color: AppTheme.textGray),
+                  prefixIcon: const Icon(Icons.search, color: AppTheme.textGray),
+                  filled: true,
+                  fillColor: AppTheme.cardDark,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                ),
+              ),
+            ),
+            TabBar(
+              controller: _tabController,
+              indicatorColor: AppTheme.primaryPurple,
+              labelColor: Colors.white,
+              unselectedLabelColor: AppTheme.textGray,
+              tabs: [
+                const Tab(text: "Discover"),
+                Tab(text: "Requests (${requestUsers.length})"),
+                Tab(text: "Connected (${connectedUsers.length})"),
+              ],
+            ),
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildConnectionsList("accepted"),
-          _buildConnectionsList("pending_received"),
-          _buildConnectionsList("pending_sent"),
-        ],
-      ),
+      body: _isLoading 
+        ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
+        : TabBarView(
+            controller: _tabController,
+            children: [
+              _buildUserList(_searchResults, "Discover"),
+              _buildUserList(requestUsers, "Requests"),
+              _buildUserList(connectedUsers, "Connected"),
+            ],
+          ),
     );
   }
 
-  Widget _buildConnectionsList(String type) {
-    // In a real schema, you'd query where status = 'accepted' or 'pending' and from/to matches currentUser
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('connections').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
-        
-        // Manual filtering for UI demo purpose
-        final docs = snapshot.data!.docs.where((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          if (type == "accepted") {
-            return data['status'] == 'accepted' && (data['user1'] == user?.uid || data['user2'] == user?.uid);
-          } else if (type == "pending_received") {
-            return data['status'] == 'pending' && data['to'] == user?.uid;
-          } else {
-            return data['status'] == 'pending' && data['from'] == user?.uid;
-          }
-        }).toList();
+  Widget _buildUserList(List<Map<dynamic, dynamic>> list, String type) {
+    if (list.isEmpty) {
+      return Center(child: Text("No users found.", style: const TextStyle(color: AppTheme.textGray)));
+    }
 
-        if (docs.isEmpty) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(bottom: 12),
-                child: Text("DEMO PREVIEW (No real connections found)", style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold)),
-              ),
-              _buildConnectionCard({'from': 'demo1', 'to': 'demo2', 'status': type == 'pending_received' ? 'pending' : 'accepted'}, type, 'demo_doc_1', isDemo: true, demoName: 'Sarah Johnson'),
-              _buildConnectionCard({'from': 'demo3', 'to': 'demo4', 'status': type == 'pending_sent' ? 'pending' : 'accepted'}, type, 'demo_doc_2', isDemo: true, demoName: 'Alex Smith'),
-            ],
-          );
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        final u = list[index];
+        final String uid = u['uid'];
+        final String name = u['name'] ?? u['username'] ?? 'Student';
+        
+        String skillsStr = 'No skills listed';
+        if (u['skills'] is List) {
+          final skillsList = (u['skills'] as List)
+              .map((s) => s is Map ? s['name'].toString() : s.toString())
+              .toList();
+          if (skillsList.isNotEmpty) {
+            skillsStr = skillsList.join(', ');
+          }
+        } else if (u['skills'] is String && u['skills'].toString().isNotEmpty) {
+          skillsStr = u['skills'].toString();
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: docs.length,
-          itemBuilder: (context, index) {
-            final data = docs[index].data() as Map<String, dynamic>;
-            return _buildConnectionCard(data, type, docs[index].id);
-          },
+        final String bio = (u['bio']?.toString().isNotEmpty ?? false) ? u['bio'].toString() : 'No bio available.';
+
+        final acceptedMap = _myConnections['accepted'] as Map? ?? {};
+        final isConnected = acceptedMap.containsKey(uid);
+
+        return Card(
+          color: AppTheme.cardDark,
+          margin: const EdgeInsets.only(bottom: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(12),
+            leading: const CircleAvatar(
+              radius: 25,
+              backgroundColor: AppTheme.primaryBlue,
+              child: Icon(Icons.person, color: Colors.white),
+            ),
+            title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Skills: $skillsStr', style: const TextStyle(color: AppTheme.primaryPurple, fontSize: 13, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 4),
+                  Text(bio, style: const TextStyle(color: AppTheme.textGray, fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            trailing: _buildActionButtons(uid, type, isConnected, name),
+            onTap: isConnected ? () {
+              final String myUid = currentUser!.uid;
+              final List<String> uids = [myUid, uid];
+              uids.sort();
+              final String chatId = uids.join('_');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChatDetailPage(chatId: chatId, otherUserId: uid, otherUserName: name),
+                ),
+              );
+            } : null,
+          ),
         );
       },
     );
   }
 
-  Widget _buildConnectionCard(Map<String, dynamic> data, String type, String docId, {bool isDemo = false, String? demoName}) {
-    String displayUserId = isDemo ? demoName! : ((data['from'] == user?.uid) ? (data['to'] ?? "Unknown") : (data['from'] ?? "Unknown"));
-    
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: AppTheme.glassBoxDecoration,
-      child: Row(
+  Widget _buildActionButtons(String uid, String type, bool isConnected, [String? name]) {
+    if (type == "Connected" || isConnected) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const CircleAvatar(
-            backgroundColor: AppTheme.primaryBlue,
-            child: Icon(Icons.person, color: Colors.white),
+          const Chip(
+            label: Text("Connected", style: TextStyle(color: Colors.white, fontSize: 12)),
+            backgroundColor: Colors.green,
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(isDemo ? demoName! : "User ID: ${displayUserId.length > 5 ? displayUserId.substring(0, 5) : displayUserId}...", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                const Text("Student", style: TextStyle(color: AppTheme.textGray, fontSize: 12)),
-              ],
-            ),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.chat, color: AppTheme.primaryPurple),
+            onPressed: () {
+              final String myUid = currentUser!.uid;
+              final List<String> uids = [myUid, uid];
+              uids.sort();
+              final String chatId = uids.join('_');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChatDetailPage(chatId: chatId, otherUserId: uid, otherUserName: name),
+                ),
+              );
+            },
           ),
-          if (type == "pending_received") ...[
-            IconButton(
-              icon: const Icon(Icons.check_circle, color: Colors.green),
-              onPressed: () {
-                FirebaseFirestore.instance.collection('connections').doc(docId).update({
-                  'status': 'accepted',
-                  'user1': data['from'],
-                  'user2': data['to'],
-                });
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.redAccent),
-              onPressed: () {
-                FirebaseFirestore.instance.collection('connections').doc(docId).delete();
-              },
-            )
-          ] else if (type == "accepted") ...[
-            IconButton(
-              icon: const Icon(Icons.message, color: AppTheme.primaryPurple),
-              onPressed: () async {
-                if (user == null) return;
-                
-                // Sort IDs to create a unique chat document ID regardless of who started it
-                List<String> participants = [user!.uid, displayUserId]..sort();
-                String chatId = "${participants[0]}_${participants[1]}";
-                
-                final chatDoc = FirebaseFirestore.instance.collection('chats').doc(chatId);
-                final docSnapshot = await chatDoc.get();
-                
-                // If chat doesn't exist, create it
-                if (!docSnapshot.exists) {
-                  await chatDoc.set({
-                    'participants': participants,
-                    'lastMessage': '',
-                    'lastUpdated': FieldValue.serverTimestamp(),
-                  });
-                }
-                
-                if (context.mounted) {
-                  Navigator.push(
-                    context, 
-                    MaterialPageRoute(
-                      builder: (_) => ChatDetailPage(chatId: chatId, otherUserId: displayUserId)
-                    )
-                  );
-                }
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.person_remove, color: Colors.redAccent),
-              onPressed: () {
-                FirebaseFirestore.instance.collection('connections').doc(docId).delete();
-              },
-            )
-          ] else ...[
-            const Text("Pending", style: TextStyle(color: Colors.orange)),
-          ]
         ],
+      );
+    }
+
+    if (type == "Requests") {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.check_circle, color: Colors.green),
+            onPressed: () => _acceptRequest(uid),
+          ),
+          IconButton(
+            icon: const Icon(Icons.cancel, color: Colors.redAccent),
+            onPressed: () => _rejectRequest(uid),
+          ),
+        ],
+      );
+    }
+
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppTheme.primaryPurple,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      onPressed: () => _sendRequest(uid),
+      child: const Text("Connect", style: TextStyle(color: Colors.white)),
     );
   }
 }

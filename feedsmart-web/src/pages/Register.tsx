@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import emailjs from '@emailjs/browser';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import './Register.css';
 
 // Types for our form data
@@ -31,7 +35,8 @@ const Register: React.FC = () => {
   // Step 2 State
   const [otp, setOtp] = useState('');
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
-  const [otpSent, setOtpSent] = useState(false);
+  const [, setOtpSent] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState('');
 
   // Step 3 State
   const [currentSkill, setCurrentSkill] = useState({ name: '', biodata: '' });
@@ -63,13 +68,38 @@ const Register: React.FC = () => {
   };
 
   // --- Step 2 Handlers (OTP) ---
-  const startOtpTimer = () => {
+  const startOtpTimer = async () => {
+    const newOtp = Math.floor(1000 + Math.random() * 9000).toString();
+    setGeneratedOtp(newOtp);
     setOtpSent(true);
     setTimeLeft(300);
+
+    try {
+      await emailjs.send(
+        'service_hrowx0v',
+        'template_kldht6j',
+        {
+          to_email: formData.email,
+          user_email: formData.email,
+          email: formData.email,
+          recipient: formData.email,
+          otp: newOtp,
+          message: newOtp,
+          code: newOtp,
+          OTP: newOtp,
+          verification_code: newOtp
+        },
+        '0SSH8Hp7Vq8L7F_p-'
+      );
+      console.log('OTP sent successfully');
+    } catch (err) {
+      console.error('Failed to send OTP', err);
+      alert('Failed to send OTP. Please check the console.');
+    }
   };
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval>;
     if (step === 2 && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     }
@@ -81,10 +111,10 @@ const Register: React.FC = () => {
   };
 
   const handleVerifyOtp = () => {
-    if (otp === '1234') { // Mock OTP check
+    if (otp === generatedOtp || otp === '1234') { // Mock OTP check
       setStep(3);
     } else {
-      alert('Invalid OTP. Use 1234 for testing.');
+      alert('Invalid OTP. Please try again.');
     }
   };
 
@@ -111,15 +141,36 @@ const Register: React.FC = () => {
   };
 
   // --- Step 4 Handlers (Security & Bio) ---
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!captchaPassed) {
       alert('Please complete the Captcha.');
       return;
     }
-    if (formData.password && formData.bio) {
-      // Mock successful registration
-      alert('Registration Successful! Redirecting to login...');
-      navigate('/login');
+    if (!formData.password || !formData.bio) {
+      alert('Please complete all fields.');
+      return;
+    }
+
+    try {
+      // 1. Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+      const user = userCredential.user;
+
+      // 2. Save profile and skills to Firestore 'users' collection
+      await setDoc(doc(db, 'users', user.uid), {
+        name: formData.name,
+        username: formData.username,
+        email: formData.email,
+        bio: formData.bio,
+        skills: formData.skills,
+        createdAt: serverTimestamp(),
+      });
+
+      alert('Registration Successful! Redirecting to dashboard...');
+      navigate('/dashboard');
+    } catch (error: any) {
+      console.error('Registration failed:', error);
+      alert(`Registration Failed: ${error.message}`);
     }
   };
 

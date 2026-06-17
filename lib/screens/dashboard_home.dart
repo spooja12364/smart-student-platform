@@ -33,6 +33,16 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
     return FirebaseFirestore.instance.collection(collectionPath).snapshots().map((snap) => snap.docs.length);
   }
 
+  String _safeDisplayName(Map<String, dynamic>? data) {
+    if (data == null) return 'Student';
+    return (data['fullName'] ?? data['name'] ?? data['username'] ?? 'Student').toString();
+  }
+
+  String _safeProfileUrl(Map<String, dynamic>? data) {
+    if (data == null) return '';
+    return (data['profilePicture'] ?? data['profileImage'] ?? '').toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
@@ -44,9 +54,15 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
           children: [
             _buildWelcomeHeader(),
             const SizedBox(height: 30),
-            const Text("Platform Stats", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            _buildStatsGrid(),
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/dashboard_illustration.png',
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
             const SizedBox(height: 30),
             const Text("Recent Activity", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
@@ -65,8 +81,8 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
         String profileUrl = "";
         if (snapshot.hasData && snapshot.data!.data() != null) {
           final data = snapshot.data!.data() as Map<String, dynamic>;
-          name = data['fullName'] ?? data['username'] ?? "Student";
-          profileUrl = data['profilePicture'] ?? "";
+          name = _safeDisplayName(data);
+          profileUrl = _safeProfileUrl(data);
         }
 
         return Row(
