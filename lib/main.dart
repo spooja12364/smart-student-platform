@@ -17,9 +17,30 @@ import 'package:smart_student_platform/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      child: SafeArea(
+        child: Container(
+          color: Colors.red,
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Text(
+              "Error:\n${details.exception}\n\nStack:\n${details.stack}",
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint("Firebase Init Error: $e");
+  }
 
   runApp(const MyApp());
 }
@@ -43,7 +64,13 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryPurple, brightness: Brightness.dark),
       ),
-      initialRoute: FirebaseAuth.instance.currentUser != null ? '/dashboard' : '/',
+      initialRoute: (() {
+        try {
+          return FirebaseAuth.instance.currentUser != null ? '/dashboard' : '/';
+        } catch (_) {
+          return '/';
+        }
+      })(),
       routes: {
         '/': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),

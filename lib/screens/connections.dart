@@ -49,6 +49,17 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
           _updateSearchResults();
           _isLoading = false;
         });
+      } else {
+        setState(() {
+          _allUsers = [];
+          _updateSearchResults();
+          _isLoading = false;
+        });
+      }
+    }, onError: (error) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        debugPrint("Error loading users: $error");
       }
     });
 

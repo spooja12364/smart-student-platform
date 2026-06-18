@@ -19,8 +19,12 @@ def driver():
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1920,1080")
     
-    # Automatically download and set up ChromeDriver
-    service = Service(ChromeDriverManager().install())
+    # Attempt to use WebDriver Manager; fall back to system chromedriver if offline
+    try:
+        service = Service(ChromeDriverManager().install())
+    except Exception:
+        # Fallback: assume chromedriver is in PATH
+        service = Service()
     driver = webdriver.Chrome(service=service, options=chrome_options)
     
     driver.implicitly_wait(10)

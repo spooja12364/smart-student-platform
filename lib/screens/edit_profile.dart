@@ -149,31 +149,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: _pickProfileImage,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppTheme.cardDark,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.photo, color: AppTheme.primaryBlue),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _pickedImageBytes != null ? "Selected image ready to upload" : (_imageUrlController.text.isNotEmpty ? "Using existing image URL" : "Choose profile photo"),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    const Icon(Icons.arrow_forward_ios, size: 16, color: AppTheme.textGray),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+
             _buildField("Full Name", _nameController),
             _buildField("Short Bio", _bioController, maxLines: 4),
             const SizedBox(height: 24),
