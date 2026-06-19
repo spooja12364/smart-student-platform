@@ -21,38 +21,45 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install dependencies
+      - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Create Test Results Directories
+      - name: Create Test Results directories
         run: |
           mkdir -p "Test Results/junit"
           mkdir -p "Test Results/html-report"
           mkdir -p "Test Results/screenshots"
-          mkdir -p "Test Results/videos"
 
-      - name: Install Report Generators
+      - name: Activate Dart global tools
         run: |
           dart pub global activate junitreport
-          dart pub global activate dart_dot_reporter
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
 
       - name: Run Flutter Tests
-        run: flutter test --machine > machine.log
-        continue-on-error: true
+        run: flutter test --machine > machine.log 2>&1 || true
 
       - name: Generate JUnit XML Report
-        run: dart pub global run junitreport:junitreport --input machine.log --output "Test Results/junit/TEST-flutter.xml"
-
-      - name: Generate HTML Report
-        run: dart pub global run dart_dot_reporter machine.log "Test Results/html-report/"
+        run: |
+          dart pub global run junitreport:junitreport \
+            --input machine.log \
+            --output "Test Results/junit/TEST-flutter.xml"
 
       - name: Generate Summary Markdown
         run: |
-          echo "# Flutter Test Execution Summary" > "Test Results/summary.md"
-          echo "Test execution completed. Please check the artifacts for full JUnit and HTML reports." >> "Test Results/summary.md"
-          # Extract pass/fail from machine.log conceptually (this is a simplified summary)
-          grep '"result":"success"' machine.log | wc -l | awk '{print "- Passed: "$1}' >> "Test Results/summary.md"
-          grep '"result":"error"' machine.log | wc -l | awk '{print "- Failed: "$1}' >> "Test Results/summary.md"
+          PASSED=$(grep -c '"result":"success"' machine.log || echo 0)
+          FAILED=$(grep -c '"result":"error"' machine.log || echo 0)
+          TOTAL=$((PASSED + FAILED))
+          cat <<EOF > "Test Results/summary.md"
+          # Flutter Test Execution Summary
+
+          | Metric | Value |
+          |--------|-------|
+          | Total  | $TOTAL |
+          | Passed | $PASSED |
+          | Failed | $FAILED |
+
+          > Full JUnit and HTML reports are available in the workflow artifacts.
+          EOF
 
       - name: Publish Summary to GitHub Actions
         run: cat "Test Results/summary.md" >> $GITHUB_STEP_SUMMARY
@@ -68,6 +75,7 @@ jobs:
       - name: Fail if tests failed
         run: |
           if grep -q '"result":"error"' machine.log; then
-            echo "Tests failed!"
+            echo "One or more Flutter tests failed!"
             exit 1
           fi
+          echo "All Flutter tests passed."

@@ -2,62 +2,71 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build-and-test:
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: pwsh
+    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.11'
 
       - name: Cache pip packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
-          path: %USERPROFILE%\.cache\pip
+          path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('selenium_tests/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install dependencies
+      - name: Install Chrome & ChromeDriver
         run: |
-          python -m venv selenium_tests\.venv
-          .\selenium_tests\.venv\Scripts\Activate.ps1
-          pip install --upgrade pip
-          pip install -r selenium_tests\requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq google-chrome-stable
+          google-chrome --version
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r selenium_tests/requirements.txt
 
       - name: Generate placeholder test cases (300+)
+        run: python selenium_tests/generate_test_cases.py
+
+      - name: Create report directories
         run: |
-          .\selenium_tests\.venv\Scripts\Activate.ps1
-          python selenium_tests\generate_test_cases.py
+          mkdir -p selenium_tests/reports
+          mkdir -p "selenium_tests/Test Results/Excel"
+          mkdir -p "selenium_tests/Test Results/Summary"
 
       - name: Run E2E tests with Pytest
+        env:
+          BASE_URL: http://localhost:8080
         run: |
-          .\selenium_tests\.venv\Scripts\Activate.ps1
-          pytest -m e2e --junitxml=selenium_tests\reports\junit.xml selenium_tests\tests
+          pytest -m e2e \
+            --junitxml=selenium_tests/reports/junit.xml \
+            selenium_tests/tests/e2e/ \
+            -v --tb=short
 
       - name: Generate Excel dashboard report
-        run: |
-          .\selenium_tests\.venv\Scripts\Activate.ps1
-          python selenium_tests\utils\generate_dashboard_report.py
+        run: python selenium_tests/utils/generate_dashboard_report.py
 
       - name: Upload Excel report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: E2E-Test-Report
-          path: selenium_tests/Test Results/Excel/E2E_Test_Report_SmartStudent_Platform.xlsx
+          path: selenium_tests/Test Results/Excel/*.xlsx
 
-      - name: Upload JUnit XML report (optional)
+      - name: Upload JUnit XML report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: JUnit-Report
