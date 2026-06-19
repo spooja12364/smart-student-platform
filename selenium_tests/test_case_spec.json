@@ -1,0 +1,27 @@
+{
+  "test_cases": [
+    // Login tests (100)
+    {{
+      "id": "login_user_{{i}}",
+      "description": "Login as user {{i}}",
+      "url": "http://localhost:8080/login",
+      "username": "user{{i}}",
+      "password": "pass{{i}}"
+    }}}
+    // Chat tests (100)
+    {{
+      "id": "chat_message_{{i}}",
+      "description": "Send chat message {{i}}",
+      "url": "http://localhost:8080/chat",
+      "message": "Hello from user {{i}}"
+    }}}
+    // Profile update tests (100)
+    {{
+      "id": "profile_update_{{i}}",
+      "description": "Update profile field {{i}}",
+      "url": "http://localhost:8080/profile",
+      "field": "field{{i}}",
+      "value": "value{{i}}"
+    }}
+  ]
+}

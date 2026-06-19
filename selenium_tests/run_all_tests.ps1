@@ -1,5 +1,5 @@
 # run_all_tests.ps1
-# E2E test runner script for Smart Student Platform
+# Smart Student Platform - E2E Testing Suite Runner
 
 $ErrorActionPreference = "Stop"
 
@@ -8,14 +8,28 @@ Write-Host "      Smart Student Platform - E2E Testing Suite Runner   " -Foregro
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $WorkspaceRoot = "d:\smart_student_platform"
-$ViteAppDir = "$WorkspaceRoot\feedsmart-web"
 $SeleniumDir = "$WorkspaceRoot\selenium_tests"
 $VenvPath = "$SeleniumDir\.venv"
-$ViteProcess = $null
 
-# 1. Establish BASE_URL
-$env:BASE_URL = "http://localhost:8080"
-Write-Host "Target URL set to: $env:BASE_URL" -ForegroundColor Gray
+# 1. Ensure virtual environment exists
+if (!(Test-Path -Path $VenvPath)) {
+    python -m venv $VenvPath
+}
+
+# 2. Activate venv and install requirements
+& "$VenvPath\Scripts\Activate.ps1"
+pip install -r "$SeleniumDir\requirements.txt"
+
+# 3. Generate test cases (data‑driven)
+python "$SeleniumDir\generate_test_cases.py"
+
+# 4. Run pytest for E2E tests and produce JUnit XML
+pytest -m e2e --junitxml="$SeleniumDir\reports\junit.xml"
+
+# 5. Generate Excel report from pytest results
+python "$SeleniumDir\utils\generate_excel_report.py"
+
+Write-Host "All steps completed successfully." -ForegroundColor Green
 
 # 2. Check if something is already listening on port 8080
 Write-Host "Checking if local server is listening on port 8080..." -ForegroundColor Gray
