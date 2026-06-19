@@ -20,6 +20,7 @@ with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     f.write("""# Auto‑generated test suite\n\n""")
     f.write("""@pytest.fixture(scope="function")\ndef driver():\n    options = webdriver.ChromeOptions()\n    options.add_argument("--headless")\n    driver = webdriver.Chrome(options=options)\n    driver.implicitly_wait(5)\n    yield driver\n    driver.quit()\n\n""")
     for i in range(1, NUM_TESTS + 1):
+        f.write("@pytest.mark.e2e\n")
         f.write(f"def test_placeholder_{i}(driver):\n")
         f.write(f"    \"\"\"Placeholder test #{i}\n    Opens the base URL and performs a trivial assertion.\n    \"\"\"\n")
         f.write(f"    driver.get(os.getenv('BASE_URL', 'http://localhost:8080'))\n")

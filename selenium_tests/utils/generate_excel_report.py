@@ -215,7 +215,27 @@ for r in range(mod_start, mod_start+len(module_data)+1):
     for c in range(1,6):
         summary.cell(row=r, column=c).border = border
 
-# Sheet 2: Test Execution Log (sample data)
+    # Detailed Test Cases Sheet
+    test_cases_sheet = wb.create_sheet(title="Test Cases")
+    headers = ["Index", "Test Name", "Status"]
+    for col_idx, header in enumerate(headers, start=1):
+        cell = test_cases_sheet.cell(row=1, column=col_idx, value=header)
+        cell.font = Font(bold=True, color='FFFFFFFF')
+        cell.fill = PatternFill(start_color='003366', end_color='003366', fill_type='solid')
+        cell.alignment = Alignment(horizontal='center')
+    # Populate rows
+    row_num = 2
+    for idx, testcase in enumerate(root.iter('testcase'), start=1):
+        name = testcase.get('name') or testcase.get('classname') or f"TC-{idx}"
+        status = 'Passed' if testcase.find('failure') is None and testcase.find('error') is None else 'Failed'
+        test_cases_sheet.cell(row=row_num, column=1, value=idx)
+        test_cases_sheet.cell(row=row_num, column=2, value=name)
+        status_cell = test_cases_sheet.cell(row=row_num, column=3, value=status)
+        if status == 'Passed':
+            status_cell.font = Font(color='008000')
+        else:
+            status_cell.font = Font(color='FF0000')
+        row_num += 1
 log = wb.create_sheet(title="Test Execution Log")
 headers = ["Test ID", "Module", "Test Scenario", "Expected Result", "Actual Result", "Status", "Remarks"]
 for c, h in enumerate(headers, start=1):
