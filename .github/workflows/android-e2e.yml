@@ -50,7 +50,7 @@ env:
   APPIUM_HOST: '127.0.0.1'
   APPIUM_PORT: '4723'
   TEST_SUITE: ${{ github.event.inputs.suite || 'full' }}
-  REPORTS_DIR: 'automation/test-reports'
+  REPORTS_DIR: 'appium_tests/Test Results'
   PAGES_DIR: 'gh-pages'
 
 jobs:
@@ -265,11 +265,11 @@ jobs:
       # ── Stage 10: Start Appium Server ─────────────────────────
       - name: '🔌 Stage 10: Start Appium Server'
         run: |
-          mkdir -p automation/test-reports/logs
+          mkdir -p "appium_tests/Test Results/Logs"
           appium \
             --address ${{ env.APPIUM_HOST }} \
             --port ${{ env.APPIUM_PORT }} \
-            --log automation/test-reports/logs/appium-server.log \
+            --log "appium_tests/Test Results/Logs/appium-server.log" \
             --log-timestamp \
             --log-no-colors \
             --relaxed-security \
@@ -296,110 +296,86 @@ jobs:
           done
           if [ $RETRIES -eq $MAX ]; then
             echo "❌ Appium server failed to start"
-            cat automation/test-reports/logs/appium-server.log | tail -30 || true
+            cat "appium_tests/Test Results/Logs/appium-server.log" | tail -30 || true
             exit 1
           fi
 
       # ── Stage 12: Execute E2E Tests ───────────────────────────
-      - name: '🧪 Stage 12: Execute Appium E2E Tests'
+      - name: '🐍 Setup Python 3'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: '📦 Install Python Dependencies'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r appium_tests/requirements.txt
+
+      - name: '🧪 Stage 12: Execute Appium Python Tests'
         id: run_tests
         continue-on-error: true
         env:
-          platform: Android
-          deviceName: emulator-5554
-          appiumHost: ${{ env.APPIUM_HOST }}
-          appiumPort: ${{ env.APPIUM_PORT }}
-          appPackage: ${{ env.APP_PACKAGE }}
-          appActivity: ${{ env.APP_ACTIVITY }}
-          apkPath: ${{ env.APK_PATH }}
-          androidVersion: "${{ env.ANDROID_API_LEVEL }}.0"
-          retryCount: "2"
-          GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          GITHUB_REF_NAME: ${{ github.ref_name }}
-          GITHUB_SHA: ${{ github.sha }}
+          DEVICE_NAME: emulator-5554
+          ANDROID_VERSION: "${{ env.ANDROID_API_LEVEL }}.0"
+          APPIUM_HOST: ${{ env.APPIUM_HOST }}
+          APPIUM_PORT: ${{ env.APPIUM_PORT }}
+          APP_PACKAGE: ${{ env.APP_PACKAGE }}
+          APP_ACTIVITY: ${{ env.APP_ACTIVITY }}
+          APK_PATH: ${{ env.APK_PATH }}
         run: |
-          cd automation
+          cd appium_tests
+          # Map 'full'/'regression' to 'all'
+          SUITE_ARG="${{ env.TEST_SUITE }}"
+          if [ "$SUITE_ARG" = "full" ] || [ "$SUITE_ARG" = "regression" ] || [ "$SUITE_ARG" = "smoke" ]; then
+            SUITE_ARG="all"
+          fi
+          echo "🧪 Running suite: $SUITE_ARG"
           
-          SUITE_FILE="src/test/resources/testng-suites/testng-full-suite.xml"
-          case "${{ env.TEST_SUITE }}" in
-            smoke)      SUITE_FILE="src/test/resources/testng-suites/testng-smoke.xml" ;;
-            auth)       SUITE_FILE="src/test/resources/testng-suites/testng-auth.xml" ;;
-            regression) SUITE_FILE="src/test/resources/testng-suites/testng-regression.xml" ;;
-          esac
+          python run_appium_tests.py --suite "$SUITE_ARG" --device emulator-5554 --android "${{ env.ANDROID_API_LEVEL }}.0"
           
-          echo "🧪 Running suite: $SUITE_FILE"
-          
-          mvn test \
-            -Dsurefire.suiteXmlFiles="$SUITE_FILE" \
-            -Dplatform=Android \
-            -DdeviceName=emulator-5554 \
-            -DappiumHost=${{ env.APPIUM_HOST }} \
-            -DappiumPort=${{ env.APPIUM_PORT }} \
-            -DappPackage=${{ env.APP_PACKAGE }} \
-            -DappActivity=${{ env.APP_ACTIVITY }} \
-            -DapkPath=${{ env.APK_PATH }} \
-            -DandroidVersion="${{ env.ANDROID_API_LEVEL }}.0" \
-            -DretryCount=2 \
-            -DGITHUB_RUN_NUMBER=${{ github.run_number }} \
-            -DGITHUB_REF_NAME=${{ github.ref_name }} \
-            -DGITHUB_SHA=${{ github.sha }} \
-            --no-transfer-progress \
-            2>&1 | tee test-reports/logs/maven-output.log || true
-          
-          echo "TEST_EXIT_CODE=${PIPESTATUS[0]}" >> $GITHUB_ENV
+          echo "TEST_EXIT_CODE=$?" >> $GITHUB_ENV
           echo "✅ Test execution completed"
 
       # ── Stage 13: Capture Screenshots & Logs ─────────────────
       - name: '📸 Stage 13: Capture Device Screenshot'
         if: always()
         run: |
-          mkdir -p automation/test-reports/screenshots
-          adb exec-out screencap -p > automation/test-reports/screenshots/final-device-state.png 2>/dev/null || true
+          mkdir -p "appium_tests/Test Results/Screenshots"
+          adb exec-out screencap -p > "appium_tests/Test Results/Screenshots/final-device-state.png" 2>/dev/null || true
           echo "📸 Device screenshot captured"
 
       - name: '📋 Capture Device Logs'
         if: always()
         run: |
-          mkdir -p automation/test-reports/logs
-          adb logcat -d > automation/test-reports/logs/device-logcat.log 2>/dev/null || true
-          adb shell dumpsys activity > automation/test-reports/logs/activity-dump.log 2>/dev/null || true
+          mkdir -p "appium_tests/Test Results/Logs"
+          adb logcat -d > "appium_tests/Test Results/Logs/device-logcat.log" 2>/dev/null || true
+          adb shell dumpsys activity > "appium_tests/Test Results/Logs/activity-dump.log" 2>/dev/null || true
           echo "📋 Device logs captured"
 
       # ── Stage 14-17: Generate Reports ────────────────────────
-      - name: '📊 Stage 14-17: Generate Reports (Excel + HTML + JSON + MD)'
+      - name: '📊 Stage 14-17: Ensure Reports Exist'
         if: always()
-        env:
-          GITHUB_RUN_NUMBER: ${{ github.run_number }}
-          GITHUB_REF_NAME: ${{ github.ref_name }}
-          GITHUB_SHA: ${{ github.sha }}
         run: |
-          cd automation
-          echo "📊 Reports are generated by the framework during test execution"
+          echo "📊 Reports are generated by run_appium_tests.py during test execution"
           
           # Create placeholder reports if tests didn't run
-          mkdir -p test-reports/HTML test-reports/JSON test-reports/Summary test-reports/Excel
+          mkdir -p "appium_tests/Test Results/HTML" "appium_tests/Test Results/JSON" "appium_tests/Test Results/Summary" "appium_tests/Test Results/Excel"
           
-          # Generate minimal summary if no summary.md exists
-          if [ ! -f "test-reports/Summary/summary.md" ]; then
-            cat > test-reports/Summary/summary.md << 'EOF'
+          if [ ! -f "appium_tests/Test Results/Summary/summary.md" ]; then
+            cat > "appium_tests/Test Results/Summary/summary.md" << 'INNER_EOF'
           # 🤖 Android Appium E2E Execution Summary
 
           | Field | Value |
           |---|---|
           | Build Number | #${{ github.run_number }} |
           | Execution Date | $(date '+%Y-%m-%d %H:%M:%S') |
-          | Git Commit | `$(echo ${{ github.sha }} | cut -c1-8)` |
           | Branch | `${{ github.ref_name }}` |
-          | Device | emulator-5554 |
-          | Android Version | ${{ env.ANDROID_API_LEVEL }}.0 |
-          | App Package | ${{ env.APP_PACKAGE }} |
 
           ## 📊 Execution Metrics
 
-          > Reports generated by the Appium framework during test execution.
-          > See attached artifacts for full Excel, HTML, and JSON reports.
-
-          EOF
+          > Placeholder report. Tests may have failed to execute.
+          INNER_EOF
           fi
           
           echo "✅ Reports stage completed"
@@ -412,13 +388,13 @@ jobs:
           name: appium-e2e-reports-build-${{ github.run_number }}
           retention-days: 30
           path: |
-            automation/test-reports/
-            automation/test-reports/HTML/
-            automation/test-reports/JSON/
-            automation/test-reports/Excel/
-            automation/test-reports/screenshots/
-            automation/test-reports/logs/
-            automation/test-reports/Summary/
+            appium_tests/Test Results/
+            appium_tests/Test Results/HTML/
+            appium_tests/Test Results/JSON/
+            appium_tests/Test Results/Excel/
+            appium_tests/Test Results/Screenshots/
+            appium_tests/Test Results/Logs/
+            appium_tests/Test Results/Summary/
 
       # ── Stage 19: Prepare GitHub Pages ───────────────────────
       - name: '🌐 Stage 19: Prepare GitHub Pages Content'
@@ -428,17 +404,17 @@ jobs:
           mkdir -p ${{ env.PAGES_DIR }}/reports/history/build-${{ github.run_number }}
           
           # Copy reports to latest
-          if [ -d "automation/test-reports" ]; then
-            cp -r automation/test-reports/HTML/. ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
-            cp -r automation/test-reports/JSON/. ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
-            cp -r automation/test-reports/Summary/. ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
-            cp -r automation/test-reports/screenshots ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
-            cp -r automation/test-reports/logs ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
+          if [ -d "appium_tests/Test Results" ]; then
+            cp -r "appium_tests/Test Results/HTML/." ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
+            cp -r "appium_tests/Test Results/JSON/." ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
+            cp -r "appium_tests/Test Results/Summary/." ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
+            cp -r "appium_tests/Test Results/Screenshots" ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
+            cp -r "appium_tests/Test Results/Logs" ${{ env.PAGES_DIR }}/reports/latest/ 2>/dev/null || true
           fi
           
           # Archive to history
-          if [ -d "automation/test-reports" ]; then
-            cp -r automation/test-reports/. ${{ env.PAGES_DIR }}/reports/history/build-${{ github.run_number }}/ 2>/dev/null || true
+          if [ -d "appium_tests/Test Results" ]; then
+            cp -r "appium_tests/Test Results/." ${{ env.PAGES_DIR }}/reports/history/build-${{ github.run_number }}/ 2>/dev/null || true
           fi
 
       - name: '🏠 Create GitHub Pages Index'
@@ -479,7 +455,7 @@ jobs:
           <body>
             <div class="hero">
               <h1>🤖 Smart Student Platform</h1>
-              <p>Android Appium E2E Automation Test Reports</p>
+              <p>Android Appium Python E2E Automation Test Reports</p>
               <div class="meta">
                 Build #${{ github.run_number }} | Branch: ${{ github.ref_name }} |
                 Commit: ${COMMIT_SHORT} | ${BUILD_DATE}
@@ -513,8 +489,8 @@ jobs:
               </div>
             </div>
             <footer>
-              <p>🤖 Smart Student Platform — Appium E2E Automation Framework</p>
-              <p>Powered by Java • TestNG • Appium • ExtentReports • Apache POI • GitHub Actions</p>
+              <p>🤖 Smart Student Platform — Appium Python E2E Automation Framework</p>
+              <p>Powered by Python • Pytest • Appium • GitHub Actions</p>
             </footer>
           </body>
           </html>
@@ -545,9 +521,12 @@ jobs:
           PAGES_URL="https://${{ github.repository_owner }}.github.io/$(echo '${{ github.repository }}' | cut -d'/' -f2)"
           
           # Read summary stats if available
-          SUMMARY_FILE="automation/test-reports/Summary/summary.md"
+          SUMMARY_FILE="appium_tests/Test Results/Summary/summary.md"
           
-          cat >> $GITHUB_STEP_SUMMARY << EOF
+          if [ -f "$SUMMARY_FILE" ]; then
+            cat "$SUMMARY_FILE" >> $GITHUB_STEP_SUMMARY
+          else
+            cat >> $GITHUB_STEP_SUMMARY << EOF
           # 🤖 Android Appium E2E Execution Summary
 
           | Field | Value |
@@ -564,13 +543,12 @@ jobs:
 
           ## 📊 Execution Metrics
 
-          | Metric | Value |
-          |---|---|
-          | 🔢 Total Test Cases | **400+** |
-          | 🧪 Modules Covered | Authentication, Registration, Profile, Navigation, Search, Filter, Dashboard, Validation, Error Handling, Authorization, Session, Notifications, File Upload, Offline, Accessibility, Responsive UI, Performance, Regression |
-
-          > ℹ️ Detailed pass/fail statistics are available in the HTML report artifacts.
-
+          > Placeholder report. Tests may have failed to execute.
+          EOF
+          fi
+          
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          
           ## 🔗 Report Links
 
           | Report | Link |
