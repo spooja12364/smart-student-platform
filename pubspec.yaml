@@ -12,30 +12,30 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
+  cupertino_icons: 1.0.9
 
-  # 🔥 Firebase
-  firebase_core: ^4.0.0
-  firebase_auth: ^6.0.0
-  firebase_database: ^12.0.0
-  cloud_firestore: ^6.4.1
-  firebase_storage: ^13.4.1
+  # Firebase
+  firebase_core: 4.11.0
+  firebase_auth: 6.5.3
+  firebase_database: 12.4.3
+  cloud_firestore: 6.6.0
+  firebase_storage: 13.4.3
 
   # others
-  http: ^1.6.0
-  google_sign_in: ^6.2.1
-  image_picker: ^1.2.2
-  record: ^6.0.1
-  audioplayers: ^6.5.0
-  flutter_linkify: ^6.0.0
-  url_launcher: ^6.3.2
-  file_picker: ^10.3.3
+  http: 1.6.0
+  google_sign_in: 6.3.0
+  image_picker: 1.2.2
+  record: 6.2.1
+  audioplayers: 6.7.1
+  flutter_linkify: 6.0.0
+  url_launcher: 6.3.2
+  file_picker: 10.3.10
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: 4.0.0
 
 flutter:
   uses-material-design: true
