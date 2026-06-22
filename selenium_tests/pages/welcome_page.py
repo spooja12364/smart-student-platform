@@ -7,7 +7,7 @@ class WelcomePage(BasePage):
     # For now, we will verify the page load by checking the title or a basic element
     
     # Locators
-    CANVAS_ELEMENT = (By.TAG_NAME, 'flt-glass-pane')
+    CANVAS_ELEMENT = (By.TAG_NAME, 'flutter-view')
     
     def __init__(self, driver):
         super().__init__(driver)
