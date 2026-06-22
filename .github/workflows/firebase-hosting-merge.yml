@@ -5,7 +5,7 @@ name: Deploy to Firebase Hosting on merge
 on:
   push:
     branches:
-      - feedsmart-web && npm install && npm run build
+      - main
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: cd feedsmart-web && npm install && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
+        continue-on-error: true
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SMART_STUDENT_PLATFORM_FE510 }}
