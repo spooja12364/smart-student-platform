@@ -1,0 +1,31 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Smoke Suite" parallel="none" thread-count="1" verbose="1">
+    <listeners>
+        <listener class-name="com.smartstudent.listeners.TestListener"/>
+    </listeners>
+    <test name="Auth Smoke">
+        <groups><run><include name="smoke"/></run></groups>
+        <classes>
+            <class name="com.smartstudent.tests.AuthenticationTests">
+                <methods>
+                    <include name="TC_AUTH_001_ValidLoginWithCorrectCredentials"/>
+                    <include name="TC_AUTH_030_LogoutFromDashboard"/>
+                    <include name="TC_AUTH_036_NavigateToRegistration"/>
+                </methods>
+            </class>
+            <class name="com.smartstudent.tests.NavigationTests">
+                <methods>
+                    <include name="TC_NAV_001_DashboardLoadsAfterLogin"/>
+                    <include name="TC_NAV_002_NavigateToProfile"/>
+                    <include name="TC_NAV_003_NavigateToSearch"/>
+                </methods>
+            </class>
+            <class name="com.smartstudent.tests.DashboardAndValidationTests">
+                <methods>
+                    <include name="TC_DASH_001_DashboardVisibleAfterLogin"/>
+                    <include name="TC_DASH_007_DashboardLoadTime"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

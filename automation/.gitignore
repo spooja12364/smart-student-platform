@@ -1,0 +1,22 @@
+# Maven
+target/
+*.class
+
+# Test Reports (generated — uploaded as artifacts)
+test-reports/screenshots/
+test-reports/logs/
+test-reports/HTML/
+test-reports/JSON/
+test-reports/Excel/
+test-reports/Summary/
+
+# IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
