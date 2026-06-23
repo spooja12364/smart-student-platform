@@ -76,3 +76,78 @@ jobs:
       - name: Fail if tests failed
         run: |
           echo "All Flutter tests passed."
+
+  appium_android_tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable KVM group perms
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.24.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Flutter dependencies & Build APK
+        run: |
+          flutter pub get
+          flutter build apk --debug
+
+      - name: Set up Node.js for Appium
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Appium and UIAutomator2
+        run: |
+          npm install -g appium
+          appium driver install uiautomator2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Python test dependencies
+        run: pip install -r appium_tests/requirements.txt
+
+      - name: Run Appium Tests on Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: playstore
+          arch: x86_64
+          profile: pixel_6
+          script: |
+            # Start Appium server in background
+            appium --log-level error:error &
+            
+            # Wait for Appium to initialize
+            sleep 10
+            
+            # Execute Appium python runner
+            python appium_tests/run_appium_tests.py
+
+      - name: Upload Appium Test Results Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-test-reports
+          path: appium_tests/Test Results/
+          retention-days: 14

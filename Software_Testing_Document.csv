@@ -1,0 +1,401 @@
+TC ID,Module,Test Scenario,Preconditions,Test Steps,Test Data,Expected Result,Priority,Severity,Test Type
+TC001,Registration,Valid Registration Flow 1,"App is installed, no user logged in",1. Open App 2. Go to Register 3. Fill details 4. Submit,Valid user data set 1,User registered successfully,High,Critical,Functional Testing
+TC002,Registration,Valid Registration Flow 2,"App is installed, no user logged in",1. Open App 2. Go to Register 3. Fill details 4. Submit,Valid user data set 2,User registered successfully,High,Critical,Functional Testing
+TC003,Registration,Valid Registration Flow 3,"App is installed, no user logged in",1. Open App 2. Go to Register 3. Fill details 4. Submit,Valid user data set 3,User registered successfully,High,Critical,Functional Testing
+TC004,Registration,Valid Registration Flow 4,"App is installed, no user logged in",1. Open App 2. Go to Register 3. Fill details 4. Submit,Valid user data set 4,User registered successfully,High,Critical,Functional Testing
+TC005,Registration,Valid Registration Flow 5,"App is installed, no user logged in",1. Open App 2. Go to Register 3. Fill details 4. Submit,Valid user data set 5,User registered successfully,High,Critical,Functional Testing
+TC006,Registration,Invalid Email Format - Case 1,Registration page open,1. Enter invalid email 2. Submit,invalid_email_1@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC007,Registration,Invalid Email Format - Case 2,Registration page open,1. Enter invalid email 2. Submit,invalid_email_2@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC008,Registration,Invalid Email Format - Case 3,Registration page open,1. Enter invalid email 2. Submit,invalid_email_3@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC009,Registration,Invalid Email Format - Case 4,Registration page open,1. Enter invalid email 2. Submit,invalid_email_4@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC010,Registration,Invalid Email Format - Case 5,Registration page open,1. Enter invalid email 2. Submit,invalid_email_5@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC011,Registration,Invalid Email Format - Case 6,Registration page open,1. Enter invalid email 2. Submit,invalid_email_6@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC012,Registration,Invalid Email Format - Case 7,Registration page open,1. Enter invalid email 2. Submit,invalid_email_7@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC013,Registration,Invalid Email Format - Case 8,Registration page open,1. Enter invalid email 2. Submit,invalid_email_8@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC014,Registration,Invalid Email Format - Case 9,Registration page open,1. Enter invalid email 2. Submit,invalid_email_9@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC015,Registration,Invalid Email Format - Case 10,Registration page open,1. Enter invalid email 2. Submit,invalid_email_10@.com,Error message: Invalid email format,High,Major,Functional Testing
+TC016,Registration,Empty Field Validation - First Name,Registration page open,1. Leave First Name empty 2. Submit,Empty string,Error message: First Name is required,Medium,Minor,Functional Testing
+TC017,Registration,Empty Field Validation - Last Name,Registration page open,1. Leave Last Name empty 2. Submit,Empty string,Error message: Last Name is required,Medium,Minor,Functional Testing
+TC018,Registration,Empty Field Validation - Email,Registration page open,1. Leave Email empty 2. Submit,Empty string,Error message: Email is required,Medium,Minor,Functional Testing
+TC019,Registration,Empty Field Validation - Password,Registration page open,1. Leave Password empty 2. Submit,Empty string,Error message: Password is required,Medium,Minor,Functional Testing
+TC020,Registration,Empty Field Validation - Confirm Password,Registration page open,1. Leave Confirm Password empty 2. Submit,Empty string,Error message: Confirm Password is required,Medium,Minor,Functional Testing
+TC021,Registration,Empty Field Validation - Phone,Registration page open,1. Leave Phone empty 2. Submit,Empty string,Error message: Phone is required,Medium,Minor,Functional Testing
+TC022,Registration,Duplicate Email Registration 1,User exists with email,1. Enter existing email 2. Submit,existing1@email.com,Error message: Email already exists,High,Critical,Functional Testing
+TC023,Registration,Duplicate Email Registration 2,User exists with email,1. Enter existing email 2. Submit,existing2@email.com,Error message: Email already exists,High,Critical,Functional Testing
+TC024,Registration,Duplicate Email Registration 3,User exists with email,1. Enter existing email 2. Submit,existing3@email.com,Error message: Email already exists,High,Critical,Functional Testing
+TC025,Registration,Duplicate Email Registration 4,User exists with email,1. Enter existing email 2. Submit,existing4@email.com,Error message: Email already exists,High,Critical,Functional Testing
+TC026,Registration,Duplicate Email Registration 5,User exists with email,1. Enter existing email 2. Submit,existing5@email.com,Error message: Email already exists,High,Critical,Functional Testing
+TC027,Registration,OTP Generation Check 1,Valid details submitted,1. Submit details 2. Check Firebase Auth,Valid details,OTP generated and sent,High,Critical,Integration Testing
+TC028,Registration,OTP Generation Check 2,Valid details submitted,1. Submit details 2. Check Firebase Auth,Valid details,OTP generated and sent,High,Critical,Integration Testing
+TC029,Registration,OTP Generation Check 3,Valid details submitted,1. Submit details 2. Check Firebase Auth,Valid details,OTP generated and sent,High,Critical,Integration Testing
+TC030,Registration,OTP Generation Check 4,Valid details submitted,1. Submit details 2. Check Firebase Auth,Valid details,OTP generated and sent,High,Critical,Integration Testing
+TC031,Registration,OTP Generation Check 5,Valid details submitted,1. Submit details 2. Check Firebase Auth,Valid details,OTP generated and sent,High,Critical,Integration Testing
+TC032,Registration,OTP Expiry Handling 1,OTP sent,1. Wait 5 minutes 2. Enter OTP,Expired OTP,Error message: OTP expired,High,Major,Security Testing
+TC033,Registration,OTP Expiry Handling 2,OTP sent,1. Wait 5 minutes 2. Enter OTP,Expired OTP,Error message: OTP expired,High,Major,Security Testing
+TC034,Registration,OTP Expiry Handling 3,OTP sent,1. Wait 5 minutes 2. Enter OTP,Expired OTP,Error message: OTP expired,High,Major,Security Testing
+TC035,Registration,OTP Expiry Handling 4,OTP sent,1. Wait 5 minutes 2. Enter OTP,Expired OTP,Error message: OTP expired,High,Major,Security Testing
+TC036,Registration,OTP Expiry Handling 5,OTP sent,1. Wait 5 minutes 2. Enter OTP,Expired OTP,Error message: OTP expired,High,Major,Security Testing
+TC037,Registration,Password Strength Validation 1,Registration page open,1. Enter weak password,password123,Error message: Password too weak,Medium,Major,Security Testing
+TC038,Registration,Password Strength Validation 2,Registration page open,1. Enter weak password,password123,Error message: Password too weak,Medium,Major,Security Testing
+TC039,Registration,Password Strength Validation 3,Registration page open,1. Enter weak password,password123,Error message: Password too weak,Medium,Major,Security Testing
+TC040,Registration,Network Interruption 1,Registration page open,1. Turn off wifi 2. Submit,Valid details,Error message: No internet connection,High,Major,System Testing
+TC041,Registration,Network Interruption 2,Registration page open,1. Turn off wifi 2. Submit,Valid details,Error message: No internet connection,High,Major,System Testing
+TC042,Registration,Network Interruption 3,Registration page open,1. Turn off wifi 2. Submit,Valid details,Error message: No internet connection,High,Major,System Testing
+TC043,Registration,Firebase Backend Failure 1,Registration page open,1. Simulate backend down 2. Submit,Valid details,Error message: Service unavailable,High,Critical,Integration Testing
+TC044,Registration,Firebase Backend Failure 2,Registration page open,1. Simulate backend down 2. Submit,Valid details,Error message: Service unavailable,High,Critical,Integration Testing
+TC045,Registration,Firebase Backend Failure 3,Registration page open,1. Simulate backend down 2. Submit,Valid details,Error message: Service unavailable,High,Critical,Integration Testing
+TC046,Registration,UI and Accessibility 1,Registration page open,1. Check screen reader,N/A,Elements read correctly,Low,Minor,Usability Testing
+TC047,Registration,UI and Accessibility 2,Registration page open,1. Check screen reader,N/A,Elements read correctly,Low,Minor,Usability Testing
+TC048,Registration,UI and Accessibility 3,Registration page open,1. Check screen reader,N/A,Elements read correctly,Low,Minor,Usability Testing
+TC049,Registration,Boundary Value - Password Max Length,Registration page open,1. Enter 128 char password,128 chars,Accepted or truncated gracefully,Medium,Minor,Functional Testing
+TC050,Registration,Edge Case - Emojis in Name,Registration page open,1. Enter emojis in Name,😀😁😂,Accepted or validation error,Low,Minor,Functional Testing
+TC051,Login,Valid Login Flow 1,Registered user exists,1. Enter credentials 2. Submit,Valid user 1,Logged in successfully,High,Critical,Functional Testing
+TC052,Login,Valid Login Flow 2,Registered user exists,1. Enter credentials 2. Submit,Valid user 2,Logged in successfully,High,Critical,Functional Testing
+TC053,Login,Valid Login Flow 3,Registered user exists,1. Enter credentials 2. Submit,Valid user 3,Logged in successfully,High,Critical,Functional Testing
+TC054,Login,Valid Login Flow 4,Registered user exists,1. Enter credentials 2. Submit,Valid user 4,Logged in successfully,High,Critical,Functional Testing
+TC055,Login,Valid Login Flow 5,Registered user exists,1. Enter credentials 2. Submit,Valid user 5,Logged in successfully,High,Critical,Functional Testing
+TC056,Login,Invalid Credentials 1,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC057,Login,Invalid Credentials 2,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC058,Login,Invalid Credentials 3,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC059,Login,Invalid Credentials 4,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC060,Login,Invalid Credentials 5,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC061,Login,Invalid Credentials 6,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC062,Login,Invalid Credentials 7,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC063,Login,Invalid Credentials 8,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC064,Login,Invalid Credentials 9,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC065,Login,Invalid Credentials 10,Login page open,1. Enter wrong password 2. Submit,Wrong pass,Error: Invalid credentials,High,Major,Functional Testing
+TC066,Login,Unverified Account Login 1,User registered but email not verified,1. Login,Unverified user,Error: Verify email first,Medium,Major,Functional Testing
+TC067,Login,Unverified Account Login 2,User registered but email not verified,1. Login,Unverified user,Error: Verify email first,Medium,Major,Functional Testing
+TC068,Login,Unverified Account Login 3,User registered but email not verified,1. Login,Unverified user,Error: Verify email first,Medium,Major,Functional Testing
+TC069,Login,Unverified Account Login 4,User registered but email not verified,1. Login,Unverified user,Error: Verify email first,Medium,Major,Functional Testing
+TC070,Login,Unverified Account Login 5,User registered but email not verified,1. Login,Unverified user,Error: Verify email first,Medium,Major,Functional Testing
+TC071,Login,Session Persistence 1,User logged in,1. Close app 2. Reopen,N/A,User remains logged in,High,Critical,System Testing
+TC072,Login,Session Persistence 2,User logged in,1. Close app 2. Reopen,N/A,User remains logged in,High,Critical,System Testing
+TC073,Login,Session Persistence 3,User logged in,1. Close app 2. Reopen,N/A,User remains logged in,High,Critical,System Testing
+TC074,Login,Session Persistence 4,User logged in,1. Close app 2. Reopen,N/A,User remains logged in,High,Critical,System Testing
+TC075,Login,Session Persistence 5,User logged in,1. Close app 2. Reopen,N/A,User remains logged in,High,Critical,System Testing
+TC076,Login,Remember Me Functionality 1,Login page,1. Check remember me 2. Login 3. Restart app,N/A,Credentials remembered / session kept,Medium,Minor,Functional Testing
+TC077,Login,Remember Me Functionality 2,Login page,1. Check remember me 2. Login 3. Restart app,N/A,Credentials remembered / session kept,Medium,Minor,Functional Testing
+TC078,Login,Remember Me Functionality 3,Login page,1. Check remember me 2. Login 3. Restart app,N/A,Credentials remembered / session kept,Medium,Minor,Functional Testing
+TC079,Login,Remember Me Functionality 4,Login page,1. Check remember me 2. Login 3. Restart app,N/A,Credentials remembered / session kept,Medium,Minor,Functional Testing
+TC080,Login,Remember Me Functionality 5,Login page,1. Check remember me 2. Login 3. Restart app,N/A,Credentials remembered / session kept,Medium,Minor,Functional Testing
+TC081,Login,Multiple Device Login 1,User logged in on device A,1. Login on device B,Same credentials,Handled correctly (e.g. session revoked or allowed),Medium,Major,Security Testing
+TC082,Login,Multiple Device Login 2,User logged in on device A,1. Login on device B,Same credentials,Handled correctly (e.g. session revoked or allowed),Medium,Major,Security Testing
+TC083,Login,Multiple Device Login 3,User logged in on device A,1. Login on device B,Same credentials,Handled correctly (e.g. session revoked or allowed),Medium,Major,Security Testing
+TC084,Login,Multiple Device Login 4,User logged in on device A,1. Login on device B,Same credentials,Handled correctly (e.g. session revoked or allowed),Medium,Major,Security Testing
+TC085,Login,Multiple Device Login 5,User logged in on device A,1. Login on device B,Same credentials,Handled correctly (e.g. session revoked or allowed),Medium,Major,Security Testing
+TC086,Login,Brute Force Attempt 1,Login page,1. Submit wrong pass 10 times,Wrong pass,Account locked / CAPTCHA shown,High,Critical,Security Testing
+TC087,Login,Brute Force Attempt 2,Login page,1. Submit wrong pass 10 times,Wrong pass,Account locked / CAPTCHA shown,High,Critical,Security Testing
+TC088,Login,Brute Force Attempt 3,Login page,1. Submit wrong pass 10 times,Wrong pass,Account locked / CAPTCHA shown,High,Critical,Security Testing
+TC089,Login,Firebase Auth Timeout 1,Login page,1. Simulate timeout,N/A,Timeout error handled,High,Major,Integration Testing
+TC090,Login,Firebase Auth Timeout 2,Login page,1. Simulate timeout,N/A,Timeout error handled,High,Major,Integration Testing
+TC091,Login,Firebase Auth Timeout 3,Login page,1. Simulate timeout,N/A,Timeout error handled,High,Major,Integration Testing
+TC092,Login,SQL/NoSQL Injection in Login 1,Login page,1. Enter injection payload,{'$gt': ''},"Input sanitized, login fails",High,Critical,Security Testing
+TC093,Login,SQL/NoSQL Injection in Login 2,Login page,1. Enter injection payload,{'$gt': ''},"Input sanitized, login fails",High,Critical,Security Testing
+TC094,Login,SQL/NoSQL Injection in Login 3,Login page,1. Enter injection payload,{'$gt': ''},"Input sanitized, login fails",High,Critical,Security Testing
+TC095,Login,SQL/NoSQL Injection in Login 4,Login page,1. Enter injection payload,{'$gt': ''},"Input sanitized, login fails",High,Critical,Security Testing
+TC096,Login,SQL/NoSQL Injection in Login 5,Login page,1. Enter injection payload,{'$gt': ''},"Input sanitized, login fails",High,Critical,Security Testing
+TC097,Login,Edge Case - Leading spaces in email,Login page,1. Enter email with space, test@test.com,"Space trimmed, login succeeds",Medium,Minor,Functional Testing
+TC098,Login,Edge Case - Caps lock warning,Login page,1. Turn on caps lock,N/A,Warning shown,Low,Minor,Usability Testing
+TC099,OTP Email,OTP Delivery Time 1,OTP triggered,1. Measure time to receive email,Valid email,Received within 30s,High,Major,Performance Testing
+TC100,OTP Email,OTP Delivery Time 2,OTP triggered,1. Measure time to receive email,Valid email,Received within 30s,High,Major,Performance Testing
+TC101,OTP Email,OTP Delivery Time 3,OTP triggered,1. Measure time to receive email,Valid email,Received within 30s,High,Major,Performance Testing
+TC102,OTP Email,OTP Delivery Time 4,OTP triggered,1. Measure time to receive email,Valid email,Received within 30s,High,Major,Performance Testing
+TC103,OTP Email,OTP Delivery Time 5,OTP triggered,1. Measure time to receive email,Valid email,Received within 30s,High,Major,Performance Testing
+TC104,OTP Email,Valid OTP Submission 1,OTP received,1. Enter correct OTP,Correct OTP,Verification success,High,Critical,Functional Testing
+TC105,OTP Email,Valid OTP Submission 2,OTP received,1. Enter correct OTP,Correct OTP,Verification success,High,Critical,Functional Testing
+TC106,OTP Email,Valid OTP Submission 3,OTP received,1. Enter correct OTP,Correct OTP,Verification success,High,Critical,Functional Testing
+TC107,OTP Email,Valid OTP Submission 4,OTP received,1. Enter correct OTP,Correct OTP,Verification success,High,Critical,Functional Testing
+TC108,OTP Email,Valid OTP Submission 5,OTP received,1. Enter correct OTP,Correct OTP,Verification success,High,Critical,Functional Testing
+TC109,OTP Email,Expired OTP Submission 1,OTP received 6 mins ago,1. Enter OTP,Expired OTP,Verification failed,High,Major,Security Testing
+TC110,OTP Email,Expired OTP Submission 2,OTP received 6 mins ago,1. Enter OTP,Expired OTP,Verification failed,High,Major,Security Testing
+TC111,OTP Email,Expired OTP Submission 3,OTP received 6 mins ago,1. Enter OTP,Expired OTP,Verification failed,High,Major,Security Testing
+TC112,OTP Email,Expired OTP Submission 4,OTP received 6 mins ago,1. Enter OTP,Expired OTP,Verification failed,High,Major,Security Testing
+TC113,OTP Email,Expired OTP Submission 5,OTP received 6 mins ago,1. Enter OTP,Expired OTP,Verification failed,High,Major,Security Testing
+TC114,OTP Email,Reused OTP Submission 1,OTP already used once,1. Enter OTP again,Used OTP,Verification failed,High,Major,Security Testing
+TC115,OTP Email,Reused OTP Submission 2,OTP already used once,1. Enter OTP again,Used OTP,Verification failed,High,Major,Security Testing
+TC116,OTP Email,Reused OTP Submission 3,OTP already used once,1. Enter OTP again,Used OTP,Verification failed,High,Major,Security Testing
+TC117,OTP Email,Reused OTP Submission 4,OTP already used once,1. Enter OTP again,Used OTP,Verification failed,High,Major,Security Testing
+TC118,OTP Email,Reused OTP Submission 5,OTP already used once,1. Enter OTP again,Used OTP,Verification failed,High,Major,Security Testing
+TC119,OTP Email,Multiple Resend Requests 1,OTP screen,1. Click resend 5 times,N/A,Rate limit applied,Medium,Major,Security Testing
+TC120,OTP Email,Multiple Resend Requests 2,OTP screen,1. Click resend 5 times,N/A,Rate limit applied,Medium,Major,Security Testing
+TC121,OTP Email,Multiple Resend Requests 3,OTP screen,1. Click resend 5 times,N/A,Rate limit applied,Medium,Major,Security Testing
+TC122,OTP Email,Multiple Resend Requests 4,OTP screen,1. Click resend 5 times,N/A,Rate limit applied,Medium,Major,Security Testing
+TC123,OTP Email,Multiple Resend Requests 5,OTP screen,1. Click resend 5 times,N/A,Rate limit applied,Medium,Major,Security Testing
+TC124,OTP Email,Spam Folder Check 1,OTP sent,1. Check email provider,N/A,Email should not go to spam,Low,Minor,System Testing
+TC125,OTP Email,Spam Folder Check 2,OTP sent,1. Check email provider,N/A,Email should not go to spam,Low,Minor,System Testing
+TC126,OTP Email,Spam Folder Check 3,OTP sent,1. Check email provider,N/A,Email should not go to spam,Low,Minor,System Testing
+TC127,OTP Email,Spam Folder Check 4,OTP sent,1. Check email provider,N/A,Email should not go to spam,Low,Minor,System Testing
+TC128,OTP Email,Spam Folder Check 5,OTP sent,1. Check email provider,N/A,Email should not go to spam,Low,Minor,System Testing
+TC129,OTP Email,Email Template Rendering 1,Email received,1. Open email on diff clients,Client type,Template renders correctly,Low,Minor,Compatibility Testing
+TC130,OTP Email,Email Template Rendering 2,Email received,1. Open email on diff clients,Client type,Template renders correctly,Low,Minor,Compatibility Testing
+TC131,OTP Email,Email Template Rendering 3,Email received,1. Open email on diff clients,Client type,Template renders correctly,Low,Minor,Compatibility Testing
+TC132,OTP Email,Email Template Rendering 4,Email received,1. Open email on diff clients,Client type,Template renders correctly,Low,Minor,Compatibility Testing
+TC133,OTP Email,Edge Case - Alpha characters in OTP,OTP screen,1. Enter letters,ABCDEF,Input rejected,Medium,Minor,Functional Testing
+TC134,OTP Email,Edge Case - Empty OTP submission,OTP screen,1. Click submit,Empty,Validation error,Medium,Minor,Functional Testing
+TC135,OTP Email,Network Failure on OTP submit,OTP screen,1. Turn off wifi 2. Submit,Valid OTP,Network error shown,High,Major,System Testing
+TC136,OTP Email,Invalid OTP Format,OTP screen,1. Enter 3 digits instead of 6,123,Validation error,Medium,Minor,Functional Testing
+TC137,Dashboard,Dashboard Data Loading 1,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC138,Dashboard,Dashboard Data Loading 2,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC139,Dashboard,Dashboard Data Loading 3,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC140,Dashboard,Dashboard Data Loading 4,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC141,Dashboard,Dashboard Data Loading 5,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC142,Dashboard,Dashboard Data Loading 6,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC143,Dashboard,Dashboard Data Loading 7,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC144,Dashboard,Dashboard Data Loading 8,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC145,Dashboard,Dashboard Data Loading 9,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC146,Dashboard,Dashboard Data Loading 10,User logged in,1. Go to Dashboard,User session,Data loads within 2s,High,Major,Performance Testing
+TC147,Dashboard,Empty State Verification 1,New user with no connections,1. Open Dashboard,New User,Friendly empty state shown,Medium,Minor,Usability Testing
+TC148,Dashboard,Empty State Verification 2,New user with no connections,1. Open Dashboard,New User,Friendly empty state shown,Medium,Minor,Usability Testing
+TC149,Dashboard,Empty State Verification 3,New user with no connections,1. Open Dashboard,New User,Friendly empty state shown,Medium,Minor,Usability Testing
+TC150,Dashboard,Empty State Verification 4,New user with no connections,1. Open Dashboard,New User,Friendly empty state shown,Medium,Minor,Usability Testing
+TC151,Dashboard,Empty State Verification 5,New user with no connections,1. Open Dashboard,New User,Friendly empty state shown,Medium,Minor,Usability Testing
+TC152,Dashboard,Widget Visibility - Skills 1,User has skills,1. Check skills widget,Skills data,Skills displayed correctly,High,Major,Functional Testing
+TC153,Dashboard,Widget Visibility - Skills 2,User has skills,1. Check skills widget,Skills data,Skills displayed correctly,High,Major,Functional Testing
+TC154,Dashboard,Widget Visibility - Skills 3,User has skills,1. Check skills widget,Skills data,Skills displayed correctly,High,Major,Functional Testing
+TC155,Dashboard,Widget Visibility - Skills 4,User has skills,1. Check skills widget,Skills data,Skills displayed correctly,High,Major,Functional Testing
+TC156,Dashboard,Widget Visibility - Skills 5,User has skills,1. Check skills widget,Skills data,Skills displayed correctly,High,Major,Functional Testing
+TC157,Dashboard,Navigation to Profile 1,Dashboard open,1. Click profile icon,N/A,Profile page opens,High,Critical,Functional Testing
+TC158,Dashboard,Navigation to Profile 2,Dashboard open,1. Click profile icon,N/A,Profile page opens,High,Critical,Functional Testing
+TC159,Dashboard,Navigation to Profile 3,Dashboard open,1. Click profile icon,N/A,Profile page opens,High,Critical,Functional Testing
+TC160,Dashboard,Navigation to Profile 4,Dashboard open,1. Click profile icon,N/A,Profile page opens,High,Critical,Functional Testing
+TC161,Dashboard,Navigation to Profile 5,Dashboard open,1. Click profile icon,N/A,Profile page opens,High,Critical,Functional Testing
+TC162,Dashboard,Pull to Refresh 1,Dashboard open,1. Swipe down,N/A,Data refreshes,Medium,Minor,Functional Testing
+TC163,Dashboard,Pull to Refresh 2,Dashboard open,1. Swipe down,N/A,Data refreshes,Medium,Minor,Functional Testing
+TC164,Dashboard,Pull to Refresh 3,Dashboard open,1. Swipe down,N/A,Data refreshes,Medium,Minor,Functional Testing
+TC165,Dashboard,Pull to Refresh 4,Dashboard open,1. Swipe down,N/A,Data refreshes,Medium,Minor,Functional Testing
+TC166,Dashboard,Pull to Refresh 5,Dashboard open,1. Swipe down,N/A,Data refreshes,Medium,Minor,Functional Testing
+TC167,Dashboard,Responsive Layout 1,Different screen sizes,1. Open dashboard,Screen size variation,UI adapts perfectly,Medium,Major,Compatibility Testing
+TC168,Dashboard,Responsive Layout 2,Different screen sizes,1. Open dashboard,Screen size variation,UI adapts perfectly,Medium,Major,Compatibility Testing
+TC169,Dashboard,Responsive Layout 3,Different screen sizes,1. Open dashboard,Screen size variation,UI adapts perfectly,Medium,Major,Compatibility Testing
+TC170,Dashboard,Responsive Layout 4,Different screen sizes,1. Open dashboard,Screen size variation,UI adapts perfectly,Medium,Major,Compatibility Testing
+TC171,Dashboard,Responsive Layout 5,Different screen sizes,1. Open dashboard,Screen size variation,UI adapts perfectly,Medium,Major,Compatibility Testing
+TC172,Dashboard,Realtime Update Check 1,Dashboard open,1. Update data from backend,Backend change,Dashboard reflects change instantly,High,Major,Integration Testing
+TC173,Dashboard,Realtime Update Check 2,Dashboard open,1. Update data from backend,Backend change,Dashboard reflects change instantly,High,Major,Integration Testing
+TC174,User Profile,View Profile Info 1,Profile open,1. Check details,N/A,Correct details shown,High,Critical,Functional Testing
+TC175,User Profile,View Profile Info 2,Profile open,1. Check details,N/A,Correct details shown,High,Critical,Functional Testing
+TC176,User Profile,View Profile Info 3,Profile open,1. Check details,N/A,Correct details shown,High,Critical,Functional Testing
+TC177,User Profile,View Profile Info 4,Profile open,1. Check details,N/A,Correct details shown,High,Critical,Functional Testing
+TC178,User Profile,View Profile Info 5,Profile open,1. Check details,N/A,Correct details shown,High,Critical,Functional Testing
+TC179,User Profile,Edit Profile Name 1,Profile open,1. Change name 2. Save,New Name,Name updated in DB,High,Major,Functional Testing
+TC180,User Profile,Edit Profile Name 2,Profile open,1. Change name 2. Save,New Name,Name updated in DB,High,Major,Functional Testing
+TC181,User Profile,Edit Profile Name 3,Profile open,1. Change name 2. Save,New Name,Name updated in DB,High,Major,Functional Testing
+TC182,User Profile,Edit Profile Name 4,Profile open,1. Change name 2. Save,New Name,Name updated in DB,High,Major,Functional Testing
+TC183,User Profile,Edit Profile Name 5,Profile open,1. Change name 2. Save,New Name,Name updated in DB,High,Major,Functional Testing
+TC184,User Profile,Profile Image Upload (Valid) 1,Profile open,1. Select < 2MB image,Valid Image,Image uploaded and shown,High,Major,Functional Testing
+TC185,User Profile,Profile Image Upload (Valid) 2,Profile open,1. Select < 2MB image,Valid Image,Image uploaded and shown,High,Major,Functional Testing
+TC186,User Profile,Profile Image Upload (Valid) 3,Profile open,1. Select < 2MB image,Valid Image,Image uploaded and shown,High,Major,Functional Testing
+TC187,User Profile,Profile Image Upload (Valid) 4,Profile open,1. Select < 2MB image,Valid Image,Image uploaded and shown,High,Major,Functional Testing
+TC188,User Profile,Profile Image Upload (Valid) 5,Profile open,1. Select < 2MB image,Valid Image,Image uploaded and shown,High,Major,Functional Testing
+TC189,User Profile,Profile Image Upload (Invalid) 1,Profile open,1. Select > 10MB image,Large Image,Error message shown,Medium,Major,Functional Testing
+TC190,User Profile,Profile Image Upload (Invalid) 2,Profile open,1. Select > 10MB image,Large Image,Error message shown,Medium,Major,Functional Testing
+TC191,User Profile,Profile Image Upload (Invalid) 3,Profile open,1. Select > 10MB image,Large Image,Error message shown,Medium,Major,Functional Testing
+TC192,User Profile,Profile Image Upload (Invalid) 4,Profile open,1. Select > 10MB image,Large Image,Error message shown,Medium,Major,Functional Testing
+TC193,User Profile,Profile Image Upload (Invalid) 5,Profile open,1. Select > 10MB image,Large Image,Error message shown,Medium,Major,Functional Testing
+TC194,User Profile,Update Skills List 1,Profile open,1. Add new skill,Skill name,Skill added to profile,High,Major,Functional Testing
+TC195,User Profile,Update Skills List 2,Profile open,1. Add new skill,Skill name,Skill added to profile,High,Major,Functional Testing
+TC196,User Profile,Update Skills List 3,Profile open,1. Add new skill,Skill name,Skill added to profile,High,Major,Functional Testing
+TC197,User Profile,Update Skills List 4,Profile open,1. Add new skill,Skill name,Skill added to profile,High,Major,Functional Testing
+TC198,User Profile,Update Skills List 5,Profile open,1. Add new skill,Skill name,Skill added to profile,High,Major,Functional Testing
+TC199,User Profile,Database Sync Verification 1,Profile updated,1. Check Firebase DB,N/A,Data correctly formatted in DB,High,Critical,Integration Testing
+TC200,User Profile,Database Sync Verification 2,Profile updated,1. Check Firebase DB,N/A,Data correctly formatted in DB,High,Critical,Integration Testing
+TC201,User Profile,Database Sync Verification 3,Profile updated,1. Check Firebase DB,N/A,Data correctly formatted in DB,High,Critical,Integration Testing
+TC202,User Profile,Database Sync Verification 4,Profile updated,1. Check Firebase DB,N/A,Data correctly formatted in DB,High,Critical,Integration Testing
+TC203,User Profile,Database Sync Verification 5,Profile updated,1. Check Firebase DB,N/A,Data correctly formatted in DB,High,Critical,Integration Testing
+TC204,User Profile,Offline Profile Edit 1,No network,1. Edit profile 2. Save,New data,"Data saved locally, syncs when online",Medium,Major,System Testing
+TC205,User Profile,Offline Profile Edit 2,No network,1. Edit profile 2. Save,New data,"Data saved locally, syncs when online",Medium,Major,System Testing
+TC206,User Profile,Offline Profile Edit 3,No network,1. Edit profile 2. Save,New data,"Data saved locally, syncs when online",Medium,Major,System Testing
+TC207,User Profile,Offline Profile Edit 4,No network,1. Edit profile 2. Save,New data,"Data saved locally, syncs when online",Medium,Major,System Testing
+TC208,User Profile,Offline Profile Edit 5,No network,1. Edit profile 2. Save,New data,"Data saved locally, syncs when online",Medium,Major,System Testing
+TC209,Skills,Add New Skill 1,Skills page open,1. Type skill 2. Add,ReactJS,Skill added,High,Major,Functional Testing
+TC210,Skills,Add New Skill 2,Skills page open,1. Type skill 2. Add,ReactJS,Skill added,High,Major,Functional Testing
+TC211,Skills,Add New Skill 3,Skills page open,1. Type skill 2. Add,ReactJS,Skill added,High,Major,Functional Testing
+TC212,Skills,Add New Skill 4,Skills page open,1. Type skill 2. Add,ReactJS,Skill added,High,Major,Functional Testing
+TC213,Skills,Add New Skill 5,Skills page open,1. Type skill 2. Add,ReactJS,Skill added,High,Major,Functional Testing
+TC214,Skills,Delete Skill 1,Skill exists,1. Click delete,N/A,Skill removed,High,Major,Functional Testing
+TC215,Skills,Delete Skill 2,Skill exists,1. Click delete,N/A,Skill removed,High,Major,Functional Testing
+TC216,Skills,Delete Skill 3,Skill exists,1. Click delete,N/A,Skill removed,High,Major,Functional Testing
+TC217,Skills,Delete Skill 4,Skill exists,1. Click delete,N/A,Skill removed,High,Major,Functional Testing
+TC218,Skills,Delete Skill 5,Skill exists,1. Click delete,N/A,Skill removed,High,Major,Functional Testing
+TC219,Skills,Duplicate Skill Addition 1,Skill 'Java' exists,1. Add 'Java',Java,Error: Skill already exists,Medium,Minor,Functional Testing
+TC220,Skills,Duplicate Skill Addition 2,Skill 'Java' exists,1. Add 'Java',Java,Error: Skill already exists,Medium,Minor,Functional Testing
+TC221,Skills,Duplicate Skill Addition 3,Skill 'Java' exists,1. Add 'Java',Java,Error: Skill already exists,Medium,Minor,Functional Testing
+TC222,Skills,Duplicate Skill Addition 4,Skill 'Java' exists,1. Add 'Java',Java,Error: Skill already exists,Medium,Minor,Functional Testing
+TC223,Skills,Duplicate Skill Addition 5,Skill 'Java' exists,1. Add 'Java',Java,Error: Skill already exists,Medium,Minor,Functional Testing
+TC224,Skills,Search Skill Library 1,Search bar,1. Type 'Py',Py,"Returns Python, etc.",Medium,Minor,Functional Testing
+TC225,Skills,Search Skill Library 2,Search bar,1. Type 'Py',Py,"Returns Python, etc.",Medium,Minor,Functional Testing
+TC226,Skills,Search Skill Library 3,Search bar,1. Type 'Py',Py,"Returns Python, etc.",Medium,Minor,Functional Testing
+TC227,Skills,Search Skill Library 4,Search bar,1. Type 'Py',Py,"Returns Python, etc.",Medium,Minor,Functional Testing
+TC228,Skills,Search Skill Library 5,Search bar,1. Type 'Py',Py,"Returns Python, etc.",Medium,Minor,Functional Testing
+TC229,Skills,Max Skills Limit 1,User has 49 skills,1. Add 50th skill,Skill 50,Limit reached warning,Low,Minor,Boundary Value
+TC230,Skills,Max Skills Limit 2,User has 49 skills,1. Add 50th skill,Skill 50,Limit reached warning,Low,Minor,Boundary Value
+TC231,Skills,Max Skills Limit 3,User has 49 skills,1. Add 50th skill,Skill 50,Limit reached warning,Low,Minor,Boundary Value
+TC232,Skills,Max Skills Limit 4,User has 49 skills,1. Add 50th skill,Skill 50,Limit reached warning,Low,Minor,Boundary Value
+TC233,Skills,Max Skills Limit 5,User has 49 skills,1. Add 50th skill,Skill 50,Limit reached warning,Low,Minor,Boundary Value
+TC234,Skills,Skill Case Insensitivity 1,Skill 'HTML' exists,1. Add 'html',html,Handled as duplicate,Medium,Minor,Functional Testing
+TC235,Skills,Skill Case Insensitivity 2,Skill 'HTML' exists,1. Add 'html',html,Handled as duplicate,Medium,Minor,Functional Testing
+TC236,Skills,Skill Case Insensitivity 3,Skill 'HTML' exists,1. Add 'html',html,Handled as duplicate,Medium,Minor,Functional Testing
+TC237,Skills,Skill Case Insensitivity 4,Skill 'HTML' exists,1. Add 'html',html,Handled as duplicate,Medium,Minor,Functional Testing
+TC238,Skills,Skill Case Insensitivity 5,Skill 'HTML' exists,1. Add 'html',html,Handled as duplicate,Medium,Minor,Functional Testing
+TC239,Connections,Send Connection Request 1,Target user exists,1. Click Connect,User ID,"Request sent, pending status",High,Critical,Functional Testing
+TC240,Connections,Send Connection Request 2,Target user exists,1. Click Connect,User ID,"Request sent, pending status",High,Critical,Functional Testing
+TC241,Connections,Send Connection Request 3,Target user exists,1. Click Connect,User ID,"Request sent, pending status",High,Critical,Functional Testing
+TC242,Connections,Send Connection Request 4,Target user exists,1. Click Connect,User ID,"Request sent, pending status",High,Critical,Functional Testing
+TC243,Connections,Send Connection Request 5,Target user exists,1. Click Connect,User ID,"Request sent, pending status",High,Critical,Functional Testing
+TC244,Connections,Accept Connection 1,Pending request,1. Click Accept,Request ID,Users are connected,High,Critical,Functional Testing
+TC245,Connections,Accept Connection 2,Pending request,1. Click Accept,Request ID,Users are connected,High,Critical,Functional Testing
+TC246,Connections,Accept Connection 3,Pending request,1. Click Accept,Request ID,Users are connected,High,Critical,Functional Testing
+TC247,Connections,Accept Connection 4,Pending request,1. Click Accept,Request ID,Users are connected,High,Critical,Functional Testing
+TC248,Connections,Accept Connection 5,Pending request,1. Click Accept,Request ID,Users are connected,High,Critical,Functional Testing
+TC249,Connections,Reject Connection 1,Pending request,1. Click Reject,Request ID,Request removed,High,Major,Functional Testing
+TC250,Connections,Reject Connection 2,Pending request,1. Click Reject,Request ID,Request removed,High,Major,Functional Testing
+TC251,Connections,Reject Connection 3,Pending request,1. Click Reject,Request ID,Request removed,High,Major,Functional Testing
+TC252,Connections,Reject Connection 4,Pending request,1. Click Reject,Request ID,Request removed,High,Major,Functional Testing
+TC253,Connections,Reject Connection 5,Pending request,1. Click Reject,Request ID,Request removed,High,Major,Functional Testing
+TC254,Connections,Remove Connection 1,Already connected,1. Click Remove,Connection ID,Connection severed,Medium,Major,Functional Testing
+TC255,Connections,Remove Connection 2,Already connected,1. Click Remove,Connection ID,Connection severed,Medium,Major,Functional Testing
+TC256,Connections,Remove Connection 3,Already connected,1. Click Remove,Connection ID,Connection severed,Medium,Major,Functional Testing
+TC257,Connections,Remove Connection 4,Already connected,1. Click Remove,Connection ID,Connection severed,Medium,Major,Functional Testing
+TC258,Connections,Remove Connection 5,Already connected,1. Click Remove,Connection ID,Connection severed,Medium,Major,Functional Testing
+TC259,Connections,Search Users 1,Connections page,1. Search 'John',John,Matching users listed,Medium,Minor,Functional Testing
+TC260,Connections,Search Users 2,Connections page,1. Search 'John',John,Matching users listed,Medium,Minor,Functional Testing
+TC261,Connections,Search Users 3,Connections page,1. Search 'John',John,Matching users listed,Medium,Minor,Functional Testing
+TC262,Connections,Search Users 4,Connections page,1. Search 'John',John,Matching users listed,Medium,Minor,Functional Testing
+TC263,Connections,Search Users 5,Connections page,1. Search 'John',John,Matching users listed,Medium,Minor,Functional Testing
+TC264,Connections,Mutual Connections Display 1,Viewing user profile,1. Look at mutuals,N/A,Correct mutual count shown,Medium,Minor,Functional Testing
+TC265,Connections,Mutual Connections Display 2,Viewing user profile,1. Look at mutuals,N/A,Correct mutual count shown,Medium,Minor,Functional Testing
+TC266,Connections,Mutual Connections Display 3,Viewing user profile,1. Look at mutuals,N/A,Correct mutual count shown,Medium,Minor,Functional Testing
+TC267,Connections,Mutual Connections Display 4,Viewing user profile,1. Look at mutuals,N/A,Correct mutual count shown,Medium,Minor,Functional Testing
+TC268,Connections,Mutual Connections Display 5,Viewing user profile,1. Look at mutuals,N/A,Correct mutual count shown,Medium,Minor,Functional Testing
+TC269,Group Chat,Send Text Message 1,In group chat,1. Type text 2. Send,Hello 1,Message appears for all,High,Critical,Functional Testing
+TC270,Group Chat,Send Text Message 2,In group chat,1. Type text 2. Send,Hello 2,Message appears for all,High,Critical,Functional Testing
+TC271,Group Chat,Send Text Message 3,In group chat,1. Type text 2. Send,Hello 3,Message appears for all,High,Critical,Functional Testing
+TC272,Group Chat,Send Text Message 4,In group chat,1. Type text 2. Send,Hello 4,Message appears for all,High,Critical,Functional Testing
+TC273,Group Chat,Send Text Message 5,In group chat,1. Type text 2. Send,Hello 5,Message appears for all,High,Critical,Functional Testing
+TC274,Group Chat,Send Text Message 6,In group chat,1. Type text 2. Send,Hello 6,Message appears for all,High,Critical,Functional Testing
+TC275,Group Chat,Send Text Message 7,In group chat,1. Type text 2. Send,Hello 7,Message appears for all,High,Critical,Functional Testing
+TC276,Group Chat,Send Text Message 8,In group chat,1. Type text 2. Send,Hello 8,Message appears for all,High,Critical,Functional Testing
+TC277,Group Chat,Send Text Message 9,In group chat,1. Type text 2. Send,Hello 9,Message appears for all,High,Critical,Functional Testing
+TC278,Group Chat,Send Text Message 10,In group chat,1. Type text 2. Send,Hello 10,Message appears for all,High,Critical,Functional Testing
+TC279,Group Chat,Receive Real-time Message 1,In group chat,1. Other user sends msg,N/A,Message pops up instantly,High,Critical,Integration Testing
+TC280,Group Chat,Receive Real-time Message 2,In group chat,1. Other user sends msg,N/A,Message pops up instantly,High,Critical,Integration Testing
+TC281,Group Chat,Receive Real-time Message 3,In group chat,1. Other user sends msg,N/A,Message pops up instantly,High,Critical,Integration Testing
+TC282,Group Chat,Receive Real-time Message 4,In group chat,1. Other user sends msg,N/A,Message pops up instantly,High,Critical,Integration Testing
+TC283,Group Chat,Receive Real-time Message 5,In group chat,1. Other user sends msg,N/A,Message pops up instantly,High,Critical,Integration Testing
+TC284,Group Chat,Send Image Media 1,In group chat,1. Attach image 2. Send,Valid image,Image uploads and displays,High,Major,Functional Testing
+TC285,Group Chat,Send Image Media 2,In group chat,1. Attach image 2. Send,Valid image,Image uploads and displays,High,Major,Functional Testing
+TC286,Group Chat,Send Image Media 3,In group chat,1. Attach image 2. Send,Valid image,Image uploads and displays,High,Major,Functional Testing
+TC287,Group Chat,Send Image Media 4,In group chat,1. Attach image 2. Send,Valid image,Image uploads and displays,High,Major,Functional Testing
+TC288,Group Chat,Send Image Media 5,In group chat,1. Attach image 2. Send,Valid image,Image uploads and displays,High,Major,Functional Testing
+TC289,Group Chat,Chat History Pagination 1,100+ msgs in chat,1. Scroll up,N/A,Older msgs load smoothly,Medium,Major,Performance Testing
+TC290,Group Chat,Chat History Pagination 2,100+ msgs in chat,1. Scroll up,N/A,Older msgs load smoothly,Medium,Major,Performance Testing
+TC291,Group Chat,Chat History Pagination 3,100+ msgs in chat,1. Scroll up,N/A,Older msgs load smoothly,Medium,Major,Performance Testing
+TC292,Group Chat,Chat History Pagination 4,100+ msgs in chat,1. Scroll up,N/A,Older msgs load smoothly,Medium,Major,Performance Testing
+TC293,Group Chat,Chat History Pagination 5,100+ msgs in chat,1. Scroll up,N/A,Older msgs load smoothly,Medium,Major,Performance Testing
+TC294,Group Chat,Push Notifications 1,App in background,1. Receive msg,N/A,System notification appears,High,Major,System Testing
+TC295,Group Chat,Push Notifications 2,App in background,1. Receive msg,N/A,System notification appears,High,Major,System Testing
+TC296,Group Chat,Push Notifications 3,App in background,1. Receive msg,N/A,System notification appears,High,Major,System Testing
+TC297,Group Chat,Push Notifications 4,App in background,1. Receive msg,N/A,System notification appears,High,Major,System Testing
+TC298,Group Chat,Push Notifications 5,App in background,1. Receive msg,N/A,System notification appears,High,Major,System Testing
+TC299,Group Chat,Offline Message Queueing 1,No network,1. Send msg,Text,Msg queued (clock icon),Medium,Major,System Testing
+TC300,Group Chat,Offline Message Queueing 2,No network,1. Send msg,Text,Msg queued (clock icon),Medium,Major,System Testing
+TC301,Group Chat,Offline Message Queueing 3,No network,1. Send msg,Text,Msg queued (clock icon),Medium,Major,System Testing
+TC302,Group Chat,Offline Message Queueing 4,No network,1. Send msg,Text,Msg queued (clock icon),Medium,Major,System Testing
+TC303,Group Chat,Offline Message Queueing 5,No network,1. Send msg,Text,Msg queued (clock icon),Medium,Major,System Testing
+TC304,Group Chat,Sync Messages on Reconnect 1,Network restored,1. Wait,N/A,Queued msgs sent successfully,High,Major,System Testing
+TC305,Group Chat,Sync Messages on Reconnect 2,Network restored,1. Wait,N/A,Queued msgs sent successfully,High,Major,System Testing
+TC306,Group Chat,Sync Messages on Reconnect 3,Network restored,1. Wait,N/A,Queued msgs sent successfully,High,Major,System Testing
+TC307,Group Chat,Sync Messages on Reconnect 4,Network restored,1. Wait,N/A,Queued msgs sent successfully,High,Major,System Testing
+TC308,Group Chat,Sync Messages on Reconnect 5,Network restored,1. Wait,N/A,Queued msgs sent successfully,High,Major,System Testing
+TC309,Group Chat,Message Ordering 1,In chat,1. Send multiple msgs,N/A,Ordered by timestamp correctly,High,Minor,Integration Testing
+TC310,Group Chat,Message Ordering 2,In chat,1. Send multiple msgs,N/A,Ordered by timestamp correctly,High,Minor,Integration Testing
+TC311,Group Chat,Message Ordering 3,In chat,1. Send multiple msgs,N/A,Ordered by timestamp correctly,High,Minor,Integration Testing
+TC312,Login,Login with deleted account,Account deleted in DB,1. Login,Deleted user,Error: Account not found,High,Critical,Functional Testing
+TC313,Login,Login with disabled account,Account disabled by admin,1. Login,Disabled user,Error: Account disabled,High,Critical,Functional Testing
+TC314,OTP Email,Verify OTP rate limit,OTP screen,1. Send 10 invalid OTPs,Wrong OTP,Account locked for 15 mins,High,Major,Security Testing
+TC315,OTP Email,OTP Email Link redirection,Email open,1. Click verification link,N/A,Redirects to app properly,High,Major,System Testing
+TC316,Dashboard,Dashboard Theme Change,Settings open,1. Switch to Dark Mode,N/A,Dashboard reflects dark theme,Low,Minor,Usability Testing
+TC317,Dashboard,Dashboard Error State,Backend down,1. Open Dashboard,N/A,Graceful error UI shown,Medium,Major,System Testing
+TC318,Dashboard,Dashboard Cache Hit,Offline,1. Open Dashboard,N/A,Cached data shown,Medium,Major,System Testing
+TC319,User Profile,Delete Profile Image,Profile with image,1. Click remove photo,N/A,"Image removed, placeholder shown",Medium,Minor,Functional Testing
+TC320,User Profile,Long Bio text,Edit profile,1. Enter 1000 char bio,Long text,Scrolls or truncates appropriately,Medium,Minor,Boundary Value
+TC321,User Profile,Profile Share Link,Profile open,1. Click share,N/A,Generates valid deep link,Medium,Minor,Functional Testing
+TC322,User Profile,Invalid Phone format update,Edit profile,1. Enter letters in phone,ABC,Validation error,Medium,Minor,Functional Testing
+TC323,User Profile,XSS in Profile Name,Edit profile,1. Enter script tag,<script>alert(1)</script>,"Stored safely, not executed",High,Critical,Security Testing
+TC324,Group Chat,Mute Notifications,Chat settings,1. Mute chat,N/A,No push notifications for this chat,Medium,Minor,Functional Testing
+TC325,Group Chat,Leave Group,In group,1. Click leave,N/A,Removed from group list,High,Major,Functional Testing
+TC326,Group Chat,Add Member to Group,Admin in group,1. Add user,User ID,User added successfully,High,Major,Functional Testing
+TC327,Group Chat,Remove Member from Group,Admin in group,1. Remove user,User ID,User removed from chat,High,Major,Functional Testing
+TC328,Group Chat,Unread Message Badge,App in background,1. Receive msg,N/A,App icon shows unread badge,Medium,Minor,System Testing
+TC329,Group Chat,Video File Upload,In chat,1. Attach MP4,Video file,Uploads and plays,Medium,Major,Functional Testing
+TC330,Group Chat,Read Receipts,In chat,1. Other user opens chat,N/A,Ticks turn blue,Low,Minor,Functional Testing
+TC331,Firebase DB,Data Creation Validation 1,Auth user,1. Write data,JSON payload,Data successfully written,High,Critical,Integration Testing
+TC332,Firebase DB,Data Creation Validation 2,Auth user,1. Write data,JSON payload,Data successfully written,High,Critical,Integration Testing
+TC333,Firebase DB,Data Creation Validation 3,Auth user,1. Write data,JSON payload,Data successfully written,High,Critical,Integration Testing
+TC334,Firebase DB,Data Creation Validation 4,Auth user,1. Write data,JSON payload,Data successfully written,High,Critical,Integration Testing
+TC335,Firebase DB,Data Creation Validation 5,Auth user,1. Write data,JSON payload,Data successfully written,High,Critical,Integration Testing
+TC336,Firebase DB,Data Update Reflection 1,Auth user,1. Update data,JSON payload,Data successfully updated,High,Critical,Integration Testing
+TC337,Firebase DB,Data Update Reflection 2,Auth user,1. Update data,JSON payload,Data successfully updated,High,Critical,Integration Testing
+TC338,Firebase DB,Data Update Reflection 3,Auth user,1. Update data,JSON payload,Data successfully updated,High,Critical,Integration Testing
+TC339,Firebase DB,Data Update Reflection 4,Auth user,1. Update data,JSON payload,Data successfully updated,High,Critical,Integration Testing
+TC340,Firebase DB,Data Update Reflection 5,Auth user,1. Update data,JSON payload,Data successfully updated,High,Critical,Integration Testing
+TC341,Firebase DB,Concurrent DB Writes 1,Two devices,1. Write simultaneously,Data,Transaction handles concurrency,High,Major,Performance Testing
+TC342,Firebase DB,Concurrent DB Writes 2,Two devices,1. Write simultaneously,Data,Transaction handles concurrency,High,Major,Performance Testing
+TC343,Firebase DB,Concurrent DB Writes 3,Two devices,1. Write simultaneously,Data,Transaction handles concurrency,High,Major,Performance Testing
+TC344,Firebase DB,Concurrent DB Writes 4,Two devices,1. Write simultaneously,Data,Transaction handles concurrency,High,Major,Performance Testing
+TC345,Firebase DB,Concurrent DB Writes 5,Two devices,1. Write simultaneously,Data,Transaction handles concurrency,High,Major,Performance Testing
+TC346,Firebase DB,Security Rules DB Access 1,Unauth user,1. Attempt read/write,N/A,Access denied by rules,High,Critical,Security Testing
+TC347,Firebase DB,Security Rules DB Access 2,Unauth user,1. Attempt read/write,N/A,Access denied by rules,High,Critical,Security Testing
+TC348,Firebase DB,Security Rules DB Access 3,Unauth user,1. Attempt read/write,N/A,Access denied by rules,High,Critical,Security Testing
+TC349,Firebase DB,Security Rules DB Access 4,Unauth user,1. Attempt read/write,N/A,Access denied by rules,High,Critical,Security Testing
+TC350,Firebase DB,Security Rules DB Access 5,Unauth user,1. Attempt read/write,N/A,Access denied by rules,High,Critical,Security Testing
+TC351,Security,SQL Injection Attempts 1,Input fields,1. Enter SQL payload,' OR 1=1 --,Blocked by ORM/Firebase,High,Critical,Security Testing
+TC352,Security,SQL Injection Attempts 2,Input fields,1. Enter SQL payload,' OR 1=1 --,Blocked by ORM/Firebase,High,Critical,Security Testing
+TC353,Security,SQL Injection Attempts 3,Input fields,1. Enter SQL payload,' OR 1=1 --,Blocked by ORM/Firebase,High,Critical,Security Testing
+TC354,Security,XSS Attack Vectors 1,Input fields,1. Enter XSS payload,<img src=x onerror=alert(1)>,Data sanitized,High,Critical,Security Testing
+TC355,Security,XSS Attack Vectors 2,Input fields,1. Enter XSS payload,<img src=x onerror=alert(1)>,Data sanitized,High,Critical,Security Testing
+TC356,Security,XSS Attack Vectors 3,Input fields,1. Enter XSS payload,<img src=x onerror=alert(1)>,Data sanitized,High,Critical,Security Testing
+TC357,Security,Session Hijacking Prevention 1,Active session,1. Copy auth token to other device,Token,Validated against device/IP,High,Critical,Security Testing
+TC358,Security,Session Hijacking Prevention 2,Active session,1. Copy auth token to other device,Token,Validated against device/IP,High,Critical,Security Testing
+TC359,Security,Session Hijacking Prevention 3,Active session,1. Copy auth token to other device,Token,Validated against device/IP,High,Critical,Security Testing
+TC360,Security,Unauthorized API Access 1,No auth header,1. Call secure API,N/A,401 Unauthorized,High,Critical,Security Testing
+TC361,Security,Unauthorized API Access 2,No auth header,1. Call secure API,N/A,401 Unauthorized,High,Critical,Security Testing
+TC362,Security,Unauthorized API Access 3,No auth header,1. Call secure API,N/A,401 Unauthorized,High,Critical,Security Testing
+TC363,Security,Firebase Rule Bypass Attempt 1,Custom script,1. Call Firebase directly,N/A,Permission denied,High,Critical,Security Testing
+TC364,Security,Firebase Rule Bypass Attempt 2,Custom script,1. Call Firebase directly,N/A,Permission denied,High,Critical,Security Testing
+TC365,Security,Firebase Rule Bypass Attempt 3,Custom script,1. Call Firebase directly,N/A,Permission denied,High,Critical,Security Testing
+TC366,Security,Data Encryption at Rest 1,Database access,1. Inspect DB storage,N/A,Passwords/sensitive data hashed,High,Critical,Security Testing
+TC367,Security,Data Encryption at Rest 2,Database access,1. Inspect DB storage,N/A,Passwords/sensitive data hashed,High,Critical,Security Testing
+TC368,Security,Data Encryption at Rest 3,Database access,1. Inspect DB storage,N/A,Passwords/sensitive data hashed,High,Critical,Security Testing
+TC369,Security,Data Encryption at Rest 4,Database access,1. Inspect DB storage,N/A,Passwords/sensitive data hashed,High,Critical,Security Testing
+TC370,Security,Data Encryption at Rest 5,Database access,1. Inspect DB storage,N/A,Passwords/sensitive data hashed,High,Critical,Security Testing
+TC371,Performance,Login Load Test 1,Load testing tool,1. Simulate 1000 logins/sec,N/A,Server handles load,High,Major,Performance Testing
+TC372,Performance,Login Load Test 2,Load testing tool,1. Simulate 1000 logins/sec,N/A,Server handles load,High,Major,Performance Testing
+TC373,Performance,Login Load Test 3,Load testing tool,1. Simulate 1000 logins/sec,N/A,Server handles load,High,Major,Performance Testing
+TC374,Performance,Registration Stress Test 1,JMeter,1. 500 concurrent registrations,N/A,Latency < 2s,Medium,Major,Performance Testing
+TC375,Performance,Registration Stress Test 2,JMeter,1. 500 concurrent registrations,N/A,Latency < 2s,Medium,Major,Performance Testing
+TC376,Performance,Chat Scalability 1,Group with 500 members,1. Send message,N/A,Broadcasted under 1s,Medium,Major,Performance Testing
+TC377,Performance,Chat Scalability 2,Group with 500 members,1. Send message,N/A,Broadcasted under 1s,Medium,Major,Performance Testing
+TC378,Performance,DB Response Time 1,App running,1. Query large dataset,N/A,Query returns < 500ms,Medium,Major,Performance Testing
+TC379,Performance,DB Response Time 2,App running,1. Query large dataset,N/A,Query returns < 500ms,Medium,Major,Performance Testing
+TC380,Performance,DB Response Time 3,App running,1. Query large dataset,N/A,Query returns < 500ms,Medium,Major,Performance Testing
+TC381,Compatibility,Android Version Compatibility 1,"Android 8.0, 10.0, 13.0",1. Run App,N/A,Functions correctly,Medium,Major,Compatibility Testing
+TC382,Compatibility,Android Version Compatibility 2,"Android 8.0, 10.0, 13.0",1. Run App,N/A,Functions correctly,Medium,Major,Compatibility Testing
+TC383,Compatibility,Android Version Compatibility 3,"Android 8.0, 10.0, 13.0",1. Run App,N/A,Functions correctly,Medium,Major,Compatibility Testing
+TC384,Compatibility,Screen Size Adaptation 1,"Phones, Foldables",1. Open UI,N/A,No UI overlapping,Medium,Major,Compatibility Testing
+TC385,Compatibility,Screen Size Adaptation 2,"Phones, Foldables",1. Open UI,N/A,No UI overlapping,Medium,Major,Compatibility Testing
+TC386,Compatibility,Screen Size Adaptation 3,"Phones, Foldables",1. Open UI,N/A,No UI overlapping,Medium,Major,Compatibility Testing
+TC387,Compatibility,Tablet Support 1,iPad/Android Tablet,1. Run App,N/A,Landscape/Portrait adapt,Low,Minor,Compatibility Testing
+TC388,Compatibility,Tablet Support 2,iPad/Android Tablet,1. Run App,N/A,Landscape/Portrait adapt,Low,Minor,Compatibility Testing
+TC389,Compatibility,Tablet Support 3,iPad/Android Tablet,1. Run App,N/A,Landscape/Portrait adapt,Low,Minor,Compatibility Testing
+TC390,Usability,User Friendliness check,New user,1. Navigate app,N/A,Able to complete tasks intuitively,Medium,Minor,Usability Testing
+TC391,Usability,Navigation Clarity,App open,1. Check bottom nav,N/A,Icons and text are clear,Low,Minor,Usability Testing
+TC392,Usability,Error Message Quality,Cause error,1. Trigger validation,N/A,Messages are human-readable,Medium,Minor,Usability Testing
+TC393,Usability,Accessibility Labels,TalkBack on,1. Tap elements,N/A,Elements described correctly,Medium,Minor,Usability Testing
+TC394,Usability,Color Contrast,App open,1. Check text contrast,N/A,Passes WCAG AA standards,Low,Minor,Usability Testing
+TC395,Logout,Logout Functionality,Logged in,1. Click logout,N/A,"Session cleared, redirected to login",High,Critical,Functional Testing
+TC396,Logout,Session Timeout,Idle for 24h,1. Open app,N/A,Prompted to login again,Medium,Major,Security Testing
+TC397,Logout,Token Invalidation,Logged out,1. Use old token for API,Old token,401 Unauthorized,High,Critical,Security Testing
+TC398,Logout,Back Button after Logout,Logged out,1. Press device back button,N/A,Does not return to secure pages,Medium,Major,Security Testing
+TC399,Logout,Clear Local Storage on Logout,Logged out,1. Inspect app data,N/A,Sensitive data wiped,High,Critical,Security Testing
+TC400,Regression,General Regression Test 400,System updated,1. Run full suite,N/A,Pass,Medium,Major,Regression Testing
