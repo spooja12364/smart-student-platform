@@ -26,10 +26,10 @@ dependencies:
   google_sign_in: any
   image_picker: any
   record: any
-  audioplayers: any
+  audioplayers: ^5.2.1
   flutter_linkify: any
   url_launcher: any
-  file_picker: any
+  file_picker: ^8.1.4
 
 dev_dependencies:
   flutter_test:
