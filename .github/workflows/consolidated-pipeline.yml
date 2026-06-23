@@ -83,7 +83,7 @@ jobs:
   verify-web:
     name: "🔍 Verify Live Web Deployment"
     runs-on: ubuntu-latest
-    needs: build-web
+    needs: [security-scan, build-web]
     timeout-minutes: 5
 
     steps:
@@ -214,7 +214,7 @@ jobs:
   unified-summary:
     name: "📊 Unified Summary & Report Dashboard"
     runs-on: ubuntu-latest
-    needs: [security-scan, web-e2e, android-e2e, backend-tests]
+    needs: [android-e2e, web-e2e, backend-tests]
     if: always()
 
     steps:
