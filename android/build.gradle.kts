@@ -9,7 +9,7 @@ subprojects {
     if (name != "app") {
         extra.set("flutter", mapOf(
             "compileSdkVersion" to 35,
-            "minSdkVersion" to 21,
+            "minSdkVersion" to 23,
             "targetSdkVersion" to 35,
             "buildToolsVersion" to "34.0.0"
         ))
