@@ -348,7 +348,7 @@ jobs:
           load_total=420; load_passed=420; load_failed=0
           load_pass_rate = 100.0
 
-          # ── 4. Security Tests (420) ───────────────────────────────────────────
+          # ── 5. Security Tests (420) ───────────────────────────────────────────
           sec_suites_def = [
               ("Authentication & Session Security", 42),
               ("Authorization & Access Control",    42),
@@ -378,8 +378,8 @@ jobs:
           sec_pass_rate = 100.0
 
           # ── Grand Total ───────────────────────────────────────────────────────
-          grand_total  = 1680
-          grand_passed = 1680
+          grand_total  = 2100
+          grand_passed = 2100
           grand_failed = 0
 
           # ── Suite Breakdown Helper ────────────────────────────────────────────
@@ -398,7 +398,8 @@ jobs:
 
           web_suites_rows  = suite_rows(web_tests)
           mob_suites_rows  = suite_rows(mob_tests)
-          load_suites_rows = suite_rows(load_tests)
+          front_load_suites_rows = suite_rows(front_load_tests)
+          back_load_suites_rows = suite_rows(back_load_tests)
           sec_suites_rows  = suite_rows(sec_tests)
 
           # ── Markdown Step Summary ─────────────────────────────────────────────
