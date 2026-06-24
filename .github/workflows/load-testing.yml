@@ -1,0 +1,45 @@
+name: Load Testing Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      baseUrl:
+        description: 'Base URL to test'
+        required: false
+        default: 'https://smart-student-platform.web.app'
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+        with:
+          k6-version: '0.49.0'
+
+      - name: Run k6 Load Test
+        run: |
+          # Use input base URL if triggered manually, otherwise use default
+          export BASE_URL="${{ github.event.inputs.baseUrl || 'https://smart-student-platform.web.app' }}"
+          echo "Running load test against $BASE_URL"
+          
+          # Run the k6 script
+          k6 run load_tests/k6-script.js
+          
+      - name: Publish Load Test Summary
+        if: always()
+        run: |
+          if [ -f k6-summary.md ]; then
+            cat k6-summary.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ k6-summary.md not found. Load test might have failed before generating the summary." >> $GITHUB_STEP_SUMMARY
+          fi
