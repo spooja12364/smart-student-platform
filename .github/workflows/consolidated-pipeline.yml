@@ -209,12 +209,48 @@ jobs:
           echo "✅ All backend service tests passed!"
 
   # ════════════════════════════════════════════════════════════════════════════
-  # JOB 8 – Unified Summary
+  # JOB 8 – Load Testing (Frontend & Backend)
+  # ════════════════════════════════════════════════════════════════════════════
+  load-tests:
+    name: "⚡ Load Testing"
+    runs-on: ubuntu-latest
+    needs: [verify-web, backend-tests]
+    timeout-minutes: 15
+
+    steps:
+      - name: "📥 Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "⚙️ Setup k6"
+        uses: grafana/setup-k6-action@v1
+        with:
+          k6-version: '0.49.0'
+
+      - name: "⚡ Run Frontend Load Test"
+        continue-on-error: true
+        run: |
+          echo "Running Frontend Load Test..."
+          k6 run load_tests/k6-frontend.js
+
+      - name: "⚡ Run Backend Load Test"
+        continue-on-error: true
+        run: |
+          echo "Running Backend Load Test..."
+          k6 run load_tests/k6-backend.js
+
+      - name: "📋 Publish Load Test Summary"
+        if: always()
+        run: |
+          if [ -f k6-summary-frontend.md ]; then cat k6-summary-frontend.md >> $GITHUB_STEP_SUMMARY; fi
+          if [ -f k6-summary-backend.md ]; then cat k6-summary-backend.md >> $GITHUB_STEP_SUMMARY; fi
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 9 – Unified Summary
   # ════════════════════════════════════════════════════════════════════════════
   unified-summary:
     name: "📊 Unified Summary & Report Dashboard"
     runs-on: ubuntu-latest
-    needs: [android-e2e, web-e2e, backend-tests]
+    needs: [android-e2e, web-e2e, backend-tests, load-tests]
     if: always()
 
     steps:
