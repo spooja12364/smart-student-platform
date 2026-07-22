@@ -35,7 +35,7 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
   Future<void> _fetchAiTip() async {
     try {
       final googleAI = FirebaseAI.googleAI(auth: FirebaseAuth.instance);
-      final model = googleAI.generativeModel(model: 'gemini-3.5-flash');
+      final model = googleAI.generativeModel(model: 'gemini-3.1-flash-lite');
       
       final prompt = "Give a single, concise (under 120 characters) tip for a user named '${user?.displayName ?? 'Student'}' on how to improve their profile, connections, or study skills on an academic networking app.";
       

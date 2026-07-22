@@ -21,7 +21,7 @@ class _AiChatPageState extends State<AiChatPage> {
     super.initState();
     final googleAI = FirebaseAI.googleAI(auth: FirebaseAuth.instance);
     _model = googleAI.generativeModel(
-      model: 'gemini-3.5-flash',
+      model: 'gemini-3.1-flash-lite',
       systemInstruction: Content.system("You are a helpful and encouraging AI assistant for an academic networking app for students. Keep your answers concise and friendly."),
     );
     _messages.add({"role": "ai", "text": "Hi there! I'm your Smart AI Assistant. How can I help you with your studies or connections today?"});
