@@ -130,7 +130,7 @@ jobs:
           if [ -f k6-summary-backend.md ]; then cat k6-summary-backend.md >> $GITHUB_STEP_SUMMARY; fi
 
   verify-all:
-    name: "✅ Verify All — 300 Web + 300 Android + 300 Backend"
+    name: "Verify All — 300 Web + 300 Android + 300 Backend"
     runs-on: ubuntu-latest
     needs: k6-load-test
     if: always()
