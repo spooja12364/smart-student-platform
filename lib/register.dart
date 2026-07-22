@@ -168,7 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
       if (response.statusCode == 200) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('OTP sent to your email')),
+            SnackBar(content: Text('OTP sent to your email')),
           );
         }
       } else {
@@ -187,12 +187,12 @@ class _RegisterPageState extends State<RegisterPage> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Email Service Unavailable'),
+            title: Text('Email Service Unavailable'),
             content: Text('We could not send the OTP via email right now.\n\nPlease use this OTP to proceed: $generatedOtp'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('OK'),
+                child: Text('OK'),
               ),
             ],
           ),
@@ -406,10 +406,10 @@ class _RegisterPageState extends State<RegisterPage> {
         maxLines: maxLines,
         keyboardType: keyboardType,
         onChanged: onChanged,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: isOptional ? '$hint (Optional - Skip if you want)' : hint,
-          hintStyle: const TextStyle(color: AppTheme.textGray),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
           filled: true,
           fillColor: Colors.white.withOpacity(0.05),
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -437,10 +437,10 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextField(
         controller: controller,
         obscureText: hide,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: AppTheme.textGray),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
           filled: true,
           fillColor: Colors.white.withOpacity(0.05),
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -453,7 +453,7 @@ class _RegisterPageState extends State<RegisterPage> {
             borderSide: const BorderSide(color: AppTheme.primaryPurple, width: 2),
           ),
           suffixIcon: IconButton(
-            icon: Icon(hide ? Icons.visibility_off : Icons.visibility, color: AppTheme.textGray),
+            icon: Icon(hide ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).colorScheme.onSurfaceVariant),
             onPressed: toggle,
           ),
         ),
@@ -476,12 +476,12 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         child: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.redAccent),
-            const SizedBox(width: 8),
+            Icon(Icons.error_outline, color: Colors.redAccent),
+            SizedBox(width: 8),
             Expanded(
               child: Text(
                 _errorMessage!,
-                style: const TextStyle(color: Colors.redAccent),
+                style: TextStyle(color: Colors.redAccent),
               ),
             ),
           ],
@@ -493,12 +493,12 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).colorScheme.onSurface),
           onPressed: _previousStep,
         ),
         title: Row(
@@ -544,24 +544,24 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             subtitle,
-            style: const TextStyle(fontSize: 16, color: AppTheme.textGray),
+            style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32),
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: AppTheme.glassBoxDecoration,
+            decoration: AppTheme.glassBoxDecoration(context),
             child: Column(
               children: [
                 _buildInlineError(),
                 ...children,
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _isLoading
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(color: AppTheme.primaryPurple),
                       )
                     : SizedBox(
@@ -575,8 +575,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           onPressed: _nextStep,
                           child: Text(
                             _currentStep == 3 ? 'COMPLETE REGISTRATION' : 'NEXT',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -584,12 +584,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                 if (_currentStep == 0) ...[
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   TextButton(
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/login');
                     },
-                    child: const Text(
+                    child: Text(
                       'Already have an account? Login here',
                       style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold),
                     ),
@@ -632,17 +632,17 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     if (_isUsernameAvailable == null) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.only(bottom: 12),
         child: Text(
           'Checking username availability...',
-          style: TextStyle(color: AppTheme.textGray, fontSize: 13),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
         ),
       );
     }
 
     if (_isUsernameAvailable == true) {
-      return const Padding(
+      return Padding(
         padding: EdgeInsets.only(bottom: 12),
         child: Row(
           children: [
@@ -657,7 +657,7 @@ class _RegisterPageState extends State<RegisterPage> {
       );
     }
 
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
@@ -683,11 +683,11 @@ class _RegisterPageState extends State<RegisterPage> {
             height: 55,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.cardDark,
+                backgroundColor: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: _isLoading ? null : sendOTP,
-              child: const Text('GENERATE OTP', style: TextStyle(color: Colors.white)),
+              child: Text('GENERATE OTP', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             ),
           ),
         if (otpSent && !otpVerified) ...[
@@ -701,7 +701,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: verifyOTP,
-              child: const Text('VERIFY OTP', style: TextStyle(color: Colors.white)),
+              child: Text('VERIFY OTP', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             ),
           ),
         ],
@@ -746,7 +746,7 @@ class _RegisterPageState extends State<RegisterPage> {
           hideConfirmPassword,
           () => setState(() => hideConfirmPassword = !hideConfirmPassword),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -756,30 +756,30 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           child: Column(
             children: [
-              const Text('Security Check', style: TextStyle(color: AppTheme.textGray)),
-              const SizedBox(height: 8),
+              Text('Security Check', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+              SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppTheme.cardDark,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   captchaText,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 32,
                     letterSpacing: 8,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               buildField('Enter Captcha Above', captchaController),
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           children: [
             Checkbox(
@@ -787,10 +787,10 @@ class _RegisterPageState extends State<RegisterPage> {
               activeColor: AppTheme.primaryPurple,
               onChanged: (v) => setState(() => agree = v ?? false),
             ),
-            const Expanded(
+            Expanded(
               child: Text(
                 'I agree to the Terms & Conditions',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ],
@@ -807,7 +807,7 @@ class _RegisterPageState extends State<RegisterPage> {
         buildField('City', cityController, isOptional: true),
         buildField('Skills / Interests (Comma separated)', skillsController),
         buildField('Short Bio (Min 5 words)', bioController, isOptional: true, maxLines: 3),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
       ],
     );
   }

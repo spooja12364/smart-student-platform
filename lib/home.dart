@@ -9,9 +9,9 @@ class HomePage extends StatelessWidget {
 
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
-        title: const Text(
+        title: Text(
           "Smart Student Platform",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
         centerTitle: true,
       ),
@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            const Text(
+            Text(
               "Welcome 👋",
               style: TextStyle(
                 fontSize: 28,
@@ -32,9 +32,9 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 10),
+            SizedBox(height: 10),
 
-            const Text(
+            Text(
               "What would you like to do today?",
               style: TextStyle(
                 fontSize: 16,
@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
 
             // CARD 1
             Container(
@@ -55,13 +55,13 @@ class HomePage extends StatelessWidget {
               child: Row(
                 children: [
 
-                  const Icon(
+                  Icon(
                     Icons.menu_book,
                     size: 40,
                     color: Colors.deepPurple,
                   ),
 
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15),
 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +86,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // CARD 2
             Container(
@@ -99,13 +99,13 @@ class HomePage extends StatelessWidget {
               child: Row(
                 children: [
 
-                  const Icon(
+                  Icon(
                     Icons.people,
                     size: 40,
                     color: Colors.deepPurple,
                   ),
 
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15),
 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +130,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
 
             // CARD 3
             Container(
@@ -143,13 +143,13 @@ class HomePage extends StatelessWidget {
               child: Row(
                 children: [
 
-                  const Icon(
+                  Icon(
                     Icons.emoji_events,
                     size: 40,
                     color: Colors.deepPurple,
                   ),
 
-                  const SizedBox(width: 15),
+                  SizedBox(width: 15),
 
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

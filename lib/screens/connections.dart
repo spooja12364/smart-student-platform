@@ -107,7 +107,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
 
   Future<void> _sendRequest(String targetUid) async {
     await FirebaseDatabase.instance.ref("connections/$targetUid/requests/${currentUser!.uid}").set(true);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Request sent!")));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Request sent!")));
   }
 
   Future<void> _acceptRequest(String requesterUid) async {
@@ -127,7 +127,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     if (currentUser == null) {
-      return const Center(child: Text("Please login.", style: TextStyle(color: Colors.white)));
+      return Center(child: Text("Please login.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)));
     }
 
     final requestsMap = _myConnections['requests'] as Map? ?? {};
@@ -137,7 +137,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
     final connectedUsers = _allUsers.where((u) => acceptedMap.containsKey(u['uid'])).toList();
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(160),
         child: Column(
@@ -145,7 +145,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: TextField(
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 onChanged: (val) {
                   setState(() {
                     _searchQuery = val;
@@ -154,10 +154,10 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
                 },
                 decoration: InputDecoration(
                   hintText: "Search by skill...",
-                  hintStyle: const TextStyle(color: AppTheme.textGray),
-                  prefixIcon: const Icon(Icons.search, color: AppTheme.textGray),
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   filled: true,
-                  fillColor: AppTheme.cardDark,
+                  fillColor: Theme.of(context).cardColor,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                 ),
               ),
@@ -165,8 +165,8 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
             TabBar(
               controller: _tabController,
               indicatorColor: AppTheme.primaryPurple,
-              labelColor: Colors.white,
-              unselectedLabelColor: AppTheme.textGray,
+              labelColor: Theme.of(context).colorScheme.onSurface,
+              unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
               tabs: [
                 const Tab(text: "Discover"),
                 Tab(text: "Requests (${requestUsers.length})"),
@@ -177,7 +177,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
         ),
       ),
       body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
+        ? Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
         : TabBarView(
             controller: _tabController,
             children: [
@@ -191,7 +191,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
 
   Widget _buildUserList(List<Map<dynamic, dynamic>> list, String type) {
     if (list.isEmpty) {
-      return Center(child: Text("No users found.", style: const TextStyle(color: AppTheme.textGray)));
+      return Center(child: Text("No users found.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)));
     }
 
     return ListView.builder(
@@ -220,25 +220,25 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
         final isConnected = acceptedMap.containsKey(uid);
 
         return Card(
-          color: AppTheme.cardDark,
+          color: Theme.of(context).cardColor,
           margin: const EdgeInsets.only(bottom: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: ListTile(
             contentPadding: const EdgeInsets.all(12),
-            leading: const CircleAvatar(
+            leading: CircleAvatar(
               radius: 25,
               backgroundColor: AppTheme.primaryBlue,
-              child: Icon(Icons.person, color: Colors.white),
+              child: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurface),
             ),
-            title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            title: Text(name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 4.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Skills: $skillsStr', style: const TextStyle(color: AppTheme.primaryPurple, fontSize: 13, fontWeight: FontWeight.w500)),
-                  const SizedBox(height: 4),
-                  Text(bio, style: const TextStyle(color: AppTheme.textGray, fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text('Skills: $skillsStr', style: TextStyle(color: AppTheme.primaryPurple, fontSize: 13, fontWeight: FontWeight.w500)),
+                  SizedBox(height: 4),
+                  Text(bio, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),
@@ -266,13 +266,13 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Chip(
-            label: Text("Connected", style: TextStyle(color: Colors.white, fontSize: 12)),
+          Chip(
+            label: Text("Connected", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
             backgroundColor: Colors.green,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.chat, color: AppTheme.primaryPurple),
+            icon: Icon(Icons.chat, color: AppTheme.primaryPurple),
             onPressed: () {
               final String myUid = currentUser!.uid;
               final List<String> uids = [myUid, uid];
@@ -295,11 +295,11 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: const Icon(Icons.check_circle, color: Colors.green),
+            icon: Icon(Icons.check_circle, color: Colors.green),
             onPressed: () => _acceptRequest(uid),
           ),
           IconButton(
-            icon: const Icon(Icons.cancel, color: Colors.redAccent),
+            icon: Icon(Icons.cancel, color: Colors.redAccent),
             onPressed: () => _rejectRequest(uid),
           ),
         ],
@@ -312,7 +312,7 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       onPressed: () => _sendRequest(uid),
-      child: const Text("Connect", style: TextStyle(color: Colors.white)),
+      child: Text("Connect", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
     );
   }
 }

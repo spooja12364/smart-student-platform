@@ -74,12 +74,12 @@ class _AiChatPageState extends State<AiChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("AI Assistant", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: AppTheme.cardDark,
+        title: Text("AI Assistant", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: Column(
         children: [
@@ -96,7 +96,7 @@ class _AiChatPageState extends State<AiChatPage> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isUser ? AppTheme.primaryPurple : AppTheme.glassBoxDecoration.color,
+                      color: isUser ? AppTheme.primaryPurple : AppTheme.glassBoxDecoration(context).color,
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
                         topRight: const Radius.circular(16),
@@ -109,7 +109,7 @@ class _AiChatPageState extends State<AiChatPage> {
                     child: Text(
                       msg["text"] ?? "",
                       style: TextStyle(
-                          color: isUser ? Colors.white : Colors.white.withOpacity(0.9), 
+                          color: isUser ? Colors.white : Theme.of(context).colorScheme.onSurface, 
                           fontSize: 15),
                     ),
                   ),
@@ -118,25 +118,25 @@ class _AiChatPageState extends State<AiChatPage> {
             ),
           ),
           if (_isLoading)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: CircularProgressIndicator(color: AppTheme.primaryPurple),
             ),
           Container(
             padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(
-              color: AppTheme.cardDark,
-              border: Border(top: BorderSide(color: Colors.white12)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              border: const Border(top: BorderSide(color: Colors.white12)),
             ),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       hintText: "Ask the AI...",
-                      hintStyle: const TextStyle(color: AppTheme.textGray),
+                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       filled: true,
                       fillColor: Colors.white10,
                       border: OutlineInputBorder(
@@ -148,7 +148,7 @@ class _AiChatPageState extends State<AiChatPage> {
                     onSubmitted: (_) => _sendMessage(),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 GestureDetector(
                   onTap: _sendMessage,
                   child: Container(
@@ -157,7 +157,7 @@ class _AiChatPageState extends State<AiChatPage> {
                       color: AppTheme.primaryBlue,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.send, color: Colors.white, size: 20),
+                    child: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface, size: 20),
                   ),
                 ),
               ],

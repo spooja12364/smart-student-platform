@@ -45,25 +45,22 @@ void main() async {
   runApp(const MyApp());
 }
 
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.dark);
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Smart Student Platform',
-      themeMode: ThemeMode.system,
-      theme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.light,
-        colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryPurple),
-      ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(seedColor: AppTheme.primaryPurple, brightness: Brightness.dark),
-      ),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (_, ThemeMode currentMode, __) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Smart Student Platform',
+          themeMode: currentMode,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
       initialRoute: (() {
         try {
           return FirebaseAuth.instance.currentUser != null ? '/dashboard' : '/';
@@ -84,5 +81,7 @@ class MyApp extends StatelessWidget {
         '/notifications': (context) => const NotificationsPage(),
       },
     );
+  },
+);
   }
 }

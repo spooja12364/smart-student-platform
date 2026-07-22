@@ -112,7 +112,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
     final hasPermission = await _audioRecorder.hasPermission();
     if (!hasPermission) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Microphone permission is required.')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Microphone permission is required.')));
       }
       return;
     }
@@ -165,12 +165,12 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.groupName, style: const TextStyle(color: Colors.white)),
-        backgroundColor: AppTheme.cardDark,
+        title: Text(widget.groupName, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: Column(
         children: [
@@ -183,7 +183,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                   .orderBy('timestamp', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
+                if (!snapshot.hasData) return Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
 
                 final docs = snapshot.data!.docs;
                 return ListView.builder(
@@ -203,7 +203,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                         margin: const EdgeInsets.only(bottom: 8),
                         padding: EdgeInsets.all(imageUrl != null ? 4 : 12),
                         decoration: BoxDecoration(
-                          color: isMe ? AppTheme.primaryBlue : AppTheme.cardDark,
+                          color: isMe ? AppTheme.primaryBlue : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16).copyWith(
                             bottomRight: isMe ? const Radius.circular(0) : null,
                             bottomLeft: !isMe ? const Radius.circular(0) : null,
@@ -215,7 +215,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                             if (!isMe && data['senderName'] != null)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 4.0),
-                                child: Text(data['senderName'], style: const TextStyle(color: AppTheme.primaryPurple, fontSize: 12, fontWeight: FontWeight.bold)),
+                                child: Text(data['senderName'], style: TextStyle(color: AppTheme.primaryPurple, fontSize: 12, fontWeight: FontWeight.bold)),
                               ),
                             if (imageUrl != null)
                               ClipRRect(
@@ -226,7 +226,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                                   fit: BoxFit.cover,
                                   loadingBuilder: (context, child, loadingProgress) {
                                     if (loadingProgress == null) return child;
-                                    return const SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(color: Colors.white)));
+                                    return SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)));
                                   },
                                 ),
                               ),
@@ -239,13 +239,13 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                                     IconButton(
                                       icon: Icon(
                                         _currentPlayingUrl == audioUrl && _isPlaying ? Icons.pause_circle : Icons.play_circle,
-                                        color: Colors.white,
+                                        color: Theme.of(context).colorScheme.onSurface,
                                         size: 32,
                                       ),
                                       onPressed: () => _playAudio(audioUrl),
                                     ),
-                                    const SizedBox(width: 8),
-                                    const Text("Voice Note", style: TextStyle(color: Colors.white, fontSize: 15)),
+                                    SizedBox(width: 8),
+                                    Text("Voice Note", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15)),
                                   ],
                                 ),
                               ),
@@ -260,8 +260,8 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                                     }
                                   },
                                   text: text,
-                                  style: const TextStyle(color: Colors.white, fontSize: 15),
-                                  linkStyle: const TextStyle(color: AppTheme.primaryBlue, decoration: TextDecoration.underline),
+                                  style: TextStyle(color: isMe ? Colors.white : Theme.of(context).colorScheme.onSurface, fontSize: 15),
+                                  linkStyle: TextStyle(color: AppTheme.primaryBlue, decoration: TextDecoration.underline),
                                 ),
                               ),
                           ],
@@ -274,9 +274,9 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
             ),
           ),
           if (_isUploading)
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(8.0),
-              child: LinearProgressIndicator(color: AppTheme.primaryPurple, backgroundColor: AppTheme.cardDark),
+              child: LinearProgressIndicator(color: AppTheme.primaryPurple, backgroundColor: Theme.of(context).cardColor),
             ),
           _buildMessageInput(),
         ],
@@ -287,27 +287,27 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
   Widget _buildMessageInput() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: AppTheme.cardDark,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.image, color: AppTheme.primaryPurple),
+            icon: Icon(Icons.image, color: AppTheme.primaryPurple),
             onPressed: _pickAndUploadImage,
           ),
           IconButton(
             icon: Icon(
               _isRecording ? Icons.stop_circle : Icons.mic,
-              color: _isRecording ? Colors.redAccent : AppTheme.textGray,
+              color: _isRecording ? Colors.redAccent : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             onPressed: _toggleRecording,
           ),
           Expanded(
             child: TextField(
               controller: _msgController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               decoration: InputDecoration(
                 hintText: "Type a message...",
-                hintStyle: const TextStyle(color: AppTheme.textGray),
+                hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.05),
@@ -316,11 +316,11 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
               onSubmitted: (val) => _sendMessage(text: val),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           CircleAvatar(
             backgroundColor: AppTheme.primaryBlue,
             child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
+              icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),
               onPressed: () => _sendMessage(text: _msgController.text),
             ),
           )

@@ -87,7 +87,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated successfully')),
+          SnackBar(content: Text('Profile updated successfully')),
         );
         Navigator.pop(context);
       }
@@ -106,12 +106,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       child: TextField(
         controller: controller,
         maxLines: maxLines,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(color: AppTheme.textGray),
+          labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
           filled: true,
-          fillColor: AppTheme.cardDark,
+          fillColor: Theme.of(context).cardColor,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
           focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryPurple)),
         ),
@@ -138,12 +138,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Edit Profile", style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text("Edit Profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -152,7 +152,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             _buildField("Full Name", _nameController),
             _buildField("Short Bio", _bioController, maxLines: 4),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -163,8 +163,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 onPressed: _isSaving ? null : _saveProfile,
                 child: _isSaving
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)
+                    : Text("Save Changes", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
               ),
             ),
           ],

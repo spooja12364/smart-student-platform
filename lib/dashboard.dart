@@ -10,6 +10,7 @@ import 'package:smart_student_platform/screens/chat_list.dart';
 import 'package:smart_student_platform/screens/profile.dart';
 import 'package:smart_student_platform/screens/notifications.dart';
 import 'package:smart_student_platform/screens/ai_chat.dart';
+import 'package:smart_student_platform/main.dart'; // import themeNotifier
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -88,8 +89,8 @@ class _DashboardPageState extends State<DashboardPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-            if (body.isNotEmpty) Text(body, style: const TextStyle(color: Colors.white70)),
+            Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+            if (body.isNotEmpty) Text(body, style: TextStyle(color: Colors.white70)),
           ],
         ),
         backgroundColor: AppTheme.primaryPurple,
@@ -98,7 +99,7 @@ class _DashboardPageState extends State<DashboardPage> {
         duration: const Duration(seconds: 4),
         action: SnackBarAction(
           label: 'View',
-          textColor: Colors.white,
+          textColor: Theme.of(context).colorScheme.onSurface,
           onPressed: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsPage()));
           },
@@ -116,20 +117,32 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text("Smart Student", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        title: Text("Smart Student", style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
         actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: themeNotifier,
+            builder: (context, currentMode, _) {
+              final isDark = currentMode == ThemeMode.dark;
+              return IconButton(
+                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode, color: Theme.of(context).colorScheme.onSurface),
+                onPressed: () {
+                  themeNotifier.value = isDark ? ThemeMode.light : ThemeMode.dark;
+                },
+              );
+            },
+          ),
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
+            icon: Icon(Icons.notifications, color: Theme.of(context).colorScheme.onSurface),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsPage()));
             },
           ),
         ],
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       drawer: _buildDrawer(),
       body: _pages[_selectedIndex],
@@ -161,9 +174,9 @@ class _DashboardPageState extends State<DashboardPage> {
                }
             }
           },
-          backgroundColor: AppTheme.cardDark,
+          backgroundColor: Theme.of(context).cardColor,
           selectedItemColor: AppTheme.primaryPurple,
-          unselectedItemColor: AppTheme.textGray,
+          unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
           type: BottomNavigationBarType.fixed,
           items: [
             const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -173,7 +186,7 @@ class _DashboardPageState extends State<DashboardPage> {
               icon: Badge(
                 isLabelVisible: _unreadChatCount > 0,
                 label: Text(_unreadChatCount.toString()),
-                child: const Icon(Icons.chat),
+                child: Icon(Icons.chat),
               ),
               label: 'Chats',
             ),
@@ -188,14 +201,14 @@ class _DashboardPageState extends State<DashboardPage> {
         },
         backgroundColor: AppTheme.primaryBlue,
         elevation: 8,
-        child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+        child: Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.onSurface, size: 28),
       ),
     );
   }
 
   Widget _buildDrawer() {
     return Drawer(
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: Theme.of(context).cardColor,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -208,22 +221,22 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 30,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).colorScheme.onSurface,
                   child: Icon(Icons.person, size: 40, color: AppTheme.primaryBlue),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
                 Text(
                   user?.email ?? "User",
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                 ),
               ],
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.person, color: Colors.white),
-            title: const Text("Profile", style: TextStyle(color: Colors.white)),
+            leading: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurface),
+            title: Text("Profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             onTap: () {
               Navigator.pop(context); // Close drawer
               setState(() {
@@ -232,8 +245,8 @@ class _DashboardPageState extends State<DashboardPage> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.star, color: Colors.white),
-            title: const Text("Add Skills", style: TextStyle(color: Colors.white)),
+            leading: Icon(Icons.star, color: Theme.of(context).colorScheme.onSurface),
+            title: Text("Add Skills", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             onTap: () {
               Navigator.pop(context);
               setState(() {
@@ -242,8 +255,8 @@ class _DashboardPageState extends State<DashboardPage> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.people, color: Colors.white),
-            title: const Text("Connections", style: TextStyle(color: Colors.white)),
+            leading: Icon(Icons.people, color: Theme.of(context).colorScheme.onSurface),
+            title: Text("Connections", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             onTap: () {
               Navigator.pop(context);
               setState(() {
@@ -252,8 +265,8 @@ class _DashboardPageState extends State<DashboardPage> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.chat, color: Colors.white),
-            title: const Text("Chats", style: TextStyle(color: Colors.white)),
+            leading: Icon(Icons.chat, color: Theme.of(context).colorScheme.onSurface),
+            title: Text("Chats", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             onTap: () {
               Navigator.pop(context);
               setState(() {
@@ -263,8 +276,8 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
           const Divider(color: Colors.white24),
           ListTile(
-            leading: const Icon(Icons.logout, color: Colors.redAccent),
-            title: const Text("Logout", style: TextStyle(color: Colors.redAccent)),
+            leading: Icon(Icons.logout, color: Colors.redAccent),
+            title: Text("Logout", style: TextStyle(color: Colors.redAccent)),
             onTap: () async {
               await FirebaseAuth.instance.signOut();
               if (mounted) {

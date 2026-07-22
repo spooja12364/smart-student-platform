@@ -106,11 +106,11 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildWelcomeHeader(),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _buildAISuggestionCard(),
-            const SizedBox(height: 24),
-            const Text("Quick Actions", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            SizedBox(height: 24),
+            Text("Quick Actions", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
@@ -126,7 +126,7 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: _buildQuickActionButton(
                     icon: Icons.person_add,
@@ -137,7 +137,7 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
                     },
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: _buildQuickActionButton(
                     icon: Icons.star,
@@ -150,11 +150,11 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            const Text("Platform Overview", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            SizedBox(height: 24),
+            Text("Platform Overview", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.bold)),
+            SizedBox(height: 16),
             _buildStatsGrid(),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
           ],
         ),
       ),
@@ -175,19 +175,13 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
 
         return Row(
           children: [
-            CircleAvatar(
-              radius: 35,
-              backgroundColor: AppTheme.primaryPurple,
-              backgroundImage: profileUrl.isNotEmpty ? NetworkImage(profileUrl) : null,
-              child: profileUrl.isEmpty ? const Icon(Icons.person, size: 40, color: Colors.white) : null,
-            ),
-            const SizedBox(width: 16),
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Welcome back,", style: TextStyle(color: AppTheme.textGray, fontSize: 16)),
-                  Text(name, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text("Welcome back,", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 16)),
+                  Text(name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -223,7 +217,7 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
 
   Widget _buildStatCard(String title, IconData icon, String collection) {
     return Container(
-      decoration: AppTheme.glassBoxDecoration,
+      decoration: AppTheme.glassBoxDecoration(context),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: Row(
         children: [
@@ -235,7 +229,7 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
             ),
             child: Icon(icon, color: AppTheme.primaryBlue, size: 24),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,20 +239,20 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
                   stream: _getStatCount(collection),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryPurple));
+                      return SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryPurple));
                     }
                     if (snapshot.hasError) {
-                      return const Text("Error", style: TextStyle(color: Colors.red));
+                      return Text("Error", style: TextStyle(color: Colors.red));
                     }
                     int count = snapshot.data ?? 0;
                     if (title == "Active Now") count = (count * 0.7).round(); // Fake active users for demo
                     return Text(
                       count.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.bold),
                     );
                   },
                 ),
-                Text(title, style: const TextStyle(color: AppTheme.textGray, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
@@ -274,15 +268,15 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withOpacity(0.5), width: 1),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 28),
-            const SizedBox(height: 8),
-            Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -316,27 +310,27 @@ class _DashboardHomeState extends State<DashboardHome> with SingleTickerProvider
               color: Colors.white.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+            child: Icon(Icons.auto_awesome, color: Theme.of(context).colorScheme.onSurface, size: 28),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   "Smart Insights",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 _isLoadingAiTip
-                    ? const SizedBox(height: 14, width: 14, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    ? SizedBox(height: 14, width: 14, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
                     : Text(
                         _currentAiTip,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,
                           height: 1.4,

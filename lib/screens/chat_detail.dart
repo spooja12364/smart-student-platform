@@ -90,11 +90,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            backgroundColor: AppTheme.cardDark,
-            title: const Text('Send Failed', style: TextStyle(color: Colors.white)),
-            content: Text('Database Error: $e\n\nPlease check your Firestore Rules.', style: const TextStyle(color: AppTheme.textGray)),
+            backgroundColor: Theme.of(context).cardColor,
+            title: Text('Send Failed', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            content: Text('Database Error: $e\n\nPlease check your Firestore Rules.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK', style: TextStyle(color: AppTheme.primaryPurple))),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text('OK', style: TextStyle(color: AppTheme.primaryPurple))),
             ],
           ),
         );
@@ -117,15 +117,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   Widget build(BuildContext context) {
     if (user == null) {
       return Scaffold(
-        backgroundColor: AppTheme.darkBg,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          title: const Text('Chat', style: TextStyle(color: Colors.white)),
-          backgroundColor: AppTheme.cardDark,
+          title: Text('Chat', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+          backgroundColor: Theme.of(context).cardColor,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.white),
+          iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         ),
-        body: const Center(
-          child: Text('Please sign in to use chat.', style: TextStyle(color: Colors.white)),
+        body: Center(
+          child: Text('Please sign in to use chat.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
         ),
       );
     }
@@ -141,12 +141,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
 
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          backgroundColor: AppTheme.darkBg,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
-            title: Text('Chat with $otherUserName', style: const TextStyle(color: Colors.white)),
-            backgroundColor: AppTheme.cardDark,
+            title: Text('Chat with $otherUserName', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            backgroundColor: Theme.of(context).cardColor,
             elevation: 0,
-            iconTheme: const IconThemeData(color: Colors.white),
+            iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
           ),
           body: SafeArea(
         child: Column(
@@ -161,12 +161,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
+                    return Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
                   }
 
                   final docs = snapshot.data!.docs;
                   if (docs.isEmpty) {
-                    return const Center(child: Text('No messages yet. Start the conversation.', style: TextStyle(color: AppTheme.textGray)));
+                    return Center(child: Text('No messages yet. Start the conversation.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)));
                   }
 
                   return ListView.builder(
@@ -187,14 +187,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                               ? () {
                                   showModalBottomSheet(
                                     context: context,
-                                    backgroundColor: AppTheme.cardDark,
+                                    backgroundColor: Theme.of(context).cardColor,
                                     builder: (context) => SafeArea(
                                       child: Wrap(
                                         children: [
                                           if (text != null && text.isNotEmpty)
                                             ListTile(
-                                              leading: const Icon(Icons.edit, color: Colors.white),
-                                              title: const Text('Edit Message', style: TextStyle(color: Colors.white)),
+                                              leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.onSurface),
+                                              title: Text('Edit Message', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                               onTap: () {
                                                 Navigator.pop(context);
                                                 _msgController.text = text;
@@ -203,11 +203,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                                   builder: (context) {
                                                     final editController = TextEditingController(text: text);
                                                     return AlertDialog(
-                                                      backgroundColor: AppTheme.cardDark,
-                                                      title: const Text('Edit Message', style: TextStyle(color: Colors.white)),
+                                                      backgroundColor: Theme.of(context).cardColor,
+                                                      title: Text('Edit Message', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                                       content: TextField(
                                                         controller: editController,
-                                                        style: const TextStyle(color: Colors.white),
+                                                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                                         decoration: const InputDecoration(
                                                           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryPurple)),
                                                         ),
@@ -215,7 +215,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                                       actions: [
                                                         TextButton(
                                                           onPressed: () => Navigator.pop(context),
-                                                          child: const Text('Cancel', style: TextStyle(color: AppTheme.textGray)),
+                                                          child: Text('Cancel', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                                                         ),
                                                         TextButton(
                                                           onPressed: () async {
@@ -227,7 +227,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                                             }
                                                             if (mounted) Navigator.pop(context);
                                                           },
-                                                          child: const Text('Save', style: TextStyle(color: AppTheme.primaryPurple)),
+                                                          child: Text('Save', style: TextStyle(color: AppTheme.primaryPurple)),
                                                         ),
                                                       ],
                                                     );
@@ -236,13 +236,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                               },
                                             ),
                                           ListTile(
-                                            leading: const Icon(Icons.delete, color: Colors.redAccent),
-                                            title: const Text('Delete Message', style: TextStyle(color: Colors.redAccent)),
+                                            leading: Icon(Icons.delete, color: Colors.redAccent),
+                                            title: Text('Delete Message', style: TextStyle(color: Colors.redAccent)),
                                             onTap: () async {
                                               Navigator.pop(context);
                                               await _deleteMessage(docs[index].id);
                                               if (mounted) {
-                                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Message deleted')));
+                                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Message deleted')));
                                               }
                                             },
                                           ),
@@ -256,7 +256,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             margin: const EdgeInsets.only(bottom: 8),
                             padding: EdgeInsets.all(imageUrl != null ? 4 : 12),
                             decoration: BoxDecoration(
-                              color: isMe ? AppTheme.primaryBlue : AppTheme.cardDark,
+                              color: isMe ? AppTheme.primaryBlue : Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(16).copyWith(
                                 bottomRight: isMe ? const Radius.circular(0) : null,
                                 bottomLeft: !isMe ? const Radius.circular(0) : null,
@@ -274,20 +274,20 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                       fit: BoxFit.cover,
                                       loadingBuilder: (context, child, loadingProgress) {
                                         if (loadingProgress == null) return child;
-                                        return const SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(color: Colors.white)));
+                                        return SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)));
                                       },
                                       errorBuilder: (context, error, stackTrace) {
                                         return Container(
                                           width: 200,
                                           height: 200,
                                           color: Colors.grey[800],
-                                          child: const Center(
+                                          child: Center(
                                             child: Column(
                                               mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                Icon(Icons.error_outline, color: Colors.white, size: 40),
+                                                Icon(Icons.error_outline, color: Theme.of(context).colorScheme.onSurface, size: 40),
                                                 SizedBox(height: 8),
-                                                Text('Could not load image\n(CORS/Permissions)', textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 12)),
+                                                Text('Could not load image\n(CORS/Permissions)', textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
                                               ],
                                             ),
                                           ),
@@ -308,12 +308,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(Icons.attach_file, color: Colors.white, size: 24),
-                                          const SizedBox(width: 8),
+                                          Icon(Icons.attach_file, color: Theme.of(context).colorScheme.onSurface, size: 24),
+                                          SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
                                               text ?? 'Download file',
-                                              style: const TextStyle(color: AppTheme.primaryBlue, fontSize: 15, decoration: TextDecoration.underline),
+                                              style: TextStyle(color: AppTheme.primaryBlue, fontSize: 15, decoration: TextDecoration.underline),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -332,8 +332,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                         }
                                       },
                                       text: text,
-                                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                                      linkStyle: const TextStyle(color: AppTheme.primaryBlue, decoration: TextDecoration.underline),
+                                      style: TextStyle(color: isMe ? Colors.white : Theme.of(context).colorScheme.onSurface, fontSize: 15),
+                                      linkStyle: TextStyle(color: AppTheme.primaryBlue, decoration: TextDecoration.underline),
                                     ),
                                   ),
                               ],
@@ -357,16 +357,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   Widget _buildMessageInput() {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: AppTheme.cardDark,
+      color: Theme.of(context).cardColor,
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: _msgController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               decoration: InputDecoration(
                 hintText: "Type a message...",
-                hintStyle: const TextStyle(color: AppTheme.textGray),
+                hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.05),
@@ -375,11 +375,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               onSubmitted: (val) => _sendMessage(text: val),
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
           CircleAvatar(
             backgroundColor: AppTheme.primaryBlue,
             child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
+              icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),
               onPressed: () => _sendMessage(text: _msgController.text),
             ),
           )

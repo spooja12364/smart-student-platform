@@ -46,12 +46,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (currentUser == null) return const Center(child: Text("Please login."));
+    if (currentUser == null) return Center(child: Text("Please login."));
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
+        ? Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
         : SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -63,15 +63,15 @@ class _ProfilePageState extends State<ProfilePage> {
                       ? NetworkImage(_userData['profileImage'])
                       : null,
                   child: _userData['profileImage'] == null || _userData['profileImage'].toString().isEmpty
-                      ? const Icon(Icons.person, size: 60, color: Colors.white)
+                      ? Icon(Icons.person, size: 60, color: Theme.of(context).colorScheme.onSurface)
                       : null,
                 ),
-                const SizedBox(height: 16),
-                Text(_userData['name'] ?? 'Student', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                const SizedBox(height: 24),
+                SizedBox(height: 16),
+                Text(_userData['name'] ?? 'Student', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                SizedBox(height: 24),
                 
                 _buildInfoCard(),
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
 
                 SizedBox(
                   width: double.infinity,
@@ -84,10 +84,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => EditProfilePage(userData: _userData)));
                     },
-                    child: const Text("Edit Profile", style: TextStyle(color: Colors.white, fontSize: 16)),
+                    child: Text("Edit Profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -98,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: _logout,
-                    child: const Text("Logout", style: TextStyle(fontSize: 16)),
+                    child: Text("Logout", style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ],
@@ -111,7 +111,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -127,13 +127,13 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, color: AppTheme.textGray, size: 20),
-        const SizedBox(width: 16),
+        Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 20),
+        SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(color: AppTheme.textGray, fontSize: 12)),
-            Text(value.isEmpty ? "Not provided" : value, style: const TextStyle(color: Colors.white, fontSize: 16)),
+            Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+            Text(value.isEmpty ? "Not provided" : value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
           ],
         )
       ],

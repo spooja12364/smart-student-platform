@@ -72,11 +72,11 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
       children: [
         Container(
           padding: const EdgeInsets.all(16),
-          color: AppTheme.cardDark,
+          color: Theme.of(context).cardColor,
           width: double.infinity,
-          child: const Text(
+          child: Text(
             "Global Collaboration Chat",
-            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
@@ -84,11 +84,11 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
             stream: _chatRef.orderByChild('timestamp').onValue,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-                return const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
+                return Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
               }
 
               if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
-                return const Center(child: Text("No messages yet. Start the conversation!", style: TextStyle(color: AppTheme.textGray)));
+                return Center(child: Text("No messages yet. Start the conversation!", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)));
               }
 
               Map<dynamic, dynamic> messagesMap = snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
@@ -116,7 +116,7 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isMe ? AppTheme.primaryPurple : AppTheme.cardDark,
+                        color: isMe ? AppTheme.primaryPurple : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.only(
                           topLeft: const Radius.circular(16),
                           topRight: const Radius.circular(16),
@@ -131,18 +131,18 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
                           if (!isMe)
                             Text(
                               msg['sender'] ?? 'Unknown',
-                              style: const TextStyle(color: AppTheme.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: 4),
                           Text(
                             msg['message'] ?? '',
-                            style: const TextStyle(color: Colors.white, fontSize: 15),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15),
                           ),
                           if (timeString.isNotEmpty) ...[
-                            const SizedBox(height: 8),
+                            SizedBox(height: 8),
                             Text(
                               timeString,
-                              style: TextStyle(color: AppTheme.textGray.withOpacity(0.9), fontSize: 11),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.9), fontSize: 11),
                             ),
                           ],
                         ],
@@ -156,18 +156,18 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
         ),
         Container(
           padding: const EdgeInsets.all(16),
-          color: AppTheme.cardDark,
+          color: Theme.of(context).cardColor,
           child: Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: _messageController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: "Type a message...",
-                    hintStyle: const TextStyle(color: AppTheme.textGray),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     filled: true,
-                    fillColor: AppTheme.darkBg,
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
@@ -176,12 +176,12 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               CircleAvatar(
                 radius: 24,
                 backgroundColor: AppTheme.primaryPurple,
                 child: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.white),
+                  icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),
                   onPressed: _sendMessage,
                 ),
               )

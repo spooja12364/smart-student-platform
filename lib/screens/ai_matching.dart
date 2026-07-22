@@ -17,29 +17,29 @@ class _AIMatchingState extends State<AIMatching> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("AI Skill Matches", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              const Text("Find students who can teach what you want to learn.", style: TextStyle(color: AppTheme.textGray)),
-              const SizedBox(height: 20),
+              Text("AI Skill Matches", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 28, fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              Text("Find students who can teach what you want to learn.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+              SizedBox(height: 20),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   // In a real app, you would query users based on complex AI matching. 
                   // For UI prototype, we just fetch all skills where teaching == true
                   stream: FirebaseFirestore.instance.collection('skills').where('teaching', isEqualTo: true).snapshots(),
                   builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
+                    if (!snapshot.hasData) return Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
                     
                     final docs = snapshot.data!.docs.where((doc) => (doc.data() as Map<String, dynamic>)['userId'] != user?.uid).toList();
 
                     if (docs.isEmpty) {
-                      return const Center(child: Text("No matches found yet.", style: TextStyle(color: AppTheme.textGray)));
+                      return Center(child: Text("No matches found yet.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)));
                     }
 
                     return ListView.builder(
@@ -70,23 +70,23 @@ class _AIMatchingState extends State<AIMatching> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
-        decoration: AppTheme.glassBoxDecoration,
+        decoration: AppTheme.glassBoxDecoration(context),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 backgroundColor: AppTheme.primaryPurple,
-                child: Icon(Icons.person, color: Colors.white),
+                child: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurface),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Suggested Match", style: TextStyle(color: AppTheme.textGray, fontSize: 12)),
-                    Text("User ID: ${skillData['userId'].toString().substring(0, 5)}...", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text("Suggested Match", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+                    Text("User ID: ${skillData['userId'].toString().substring(0, 5)}...", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -96,15 +96,15 @@ class _AIMatchingState extends State<AIMatching> {
                   color: Colors.green.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Text("$matchPercentage% Match", style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                child: Text("$matchPercentage% Match", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
               )
             ],
           ),
-          const SizedBox(height: 16),
-          Text("They can teach: ${skillData['skillName']}", style: const TextStyle(color: Colors.white, fontSize: 16)),
-          const SizedBox(height: 8),
-          Text("Category: ${skillData['category']}", style: const TextStyle(color: AppTheme.textGray)),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
+          Text("They can teach: ${skillData['skillName']}", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
+          SizedBox(height: 8),
+          Text("Category: ${skillData['category']}", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -116,11 +116,11 @@ class _AIMatchingState extends State<AIMatching> {
                   onPressed: () {
                     // Send connection request logic
                   },
-                  icon: const Icon(Icons.handshake, color: Colors.white, size: 18),
-                  label: const Text("Connect", style: TextStyle(color: Colors.white)),
+                  icon: Icon(Icons.handshake, color: Theme.of(context).colorScheme.onSurface, size: 18),
+                  label: Text("Connect", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
@@ -130,8 +130,8 @@ class _AIMatchingState extends State<AIMatching> {
                   onPressed: () {
                     // Message logic
                   },
-                  icon: const Icon(Icons.message, color: Colors.white, size: 18),
-                  label: const Text("Message", style: TextStyle(color: Colors.white)),
+                  icon: Icon(Icons.message, color: Theme.of(context).colorScheme.onSurface, size: 18),
+                  label: Text("Message", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ),
               ),
             ],

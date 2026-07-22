@@ -72,74 +72,74 @@ class _MySkillsState extends State<MySkills> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: AppTheme.cardDark,
-              title: Text(existingSkill == null ? "Add Skill" : "Edit Skill", style: const TextStyle(color: Colors.white)),
+              backgroundColor: Theme.of(context).cardColor,
+              title: Text(existingSkill == null ? "Add Skill" : "Edit Skill", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
                       controller: nameController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         labelText: "Skill Name",
-                        labelStyle: const TextStyle(color: AppTheme.textGray),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         hintText: "e.g. Flutter, Firebase, AI",
-                        hintStyle: const TextStyle(color: AppTheme.textGray),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         filled: true,
-                        fillColor: AppTheme.darkBg,
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     TextField(
                       controller: descController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       maxLines: 2,
                       decoration: InputDecoration(
                         labelText: "Description",
-                        labelStyle: const TextStyle(color: AppTheme.textGray),
+                        labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         hintText: "Briefly describe your experience",
-                        hintStyle: const TextStyle(color: AppTheme.textGray),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         filled: true,
-                        fillColor: AppTheme.darkBg,
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
                       children: [
                         ChoiceChip(
-                          label: const Text('Teach'),
+                          label: Text('Teach'),
                           selected: mode == 'Teach',
                           onSelected: (_) => setDialogState(() => mode = 'Teach'),
                           selectedColor: AppTheme.primaryPurple,
-                          backgroundColor: AppTheme.cardDark,
-                          labelStyle: TextStyle(color: mode == 'Teach' ? Colors.white : AppTheme.textGray),
+                          backgroundColor: Theme.of(context).cardColor,
+                          labelStyle: TextStyle(color: mode == 'Teach' ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         ChoiceChip(
-                          label: const Text('Learn'),
+                          label: Text('Learn'),
                           selected: mode == 'Learn',
                           onSelected: (_) => setDialogState(() => mode = 'Learn'),
                           selectedColor: AppTheme.primaryPurple,
-                          backgroundColor: AppTheme.cardDark,
-                          labelStyle: TextStyle(color: mode == 'Learn' ? Colors.white : AppTheme.textGray),
+                          backgroundColor: Theme.of(context).cardColor,
+                          labelStyle: TextStyle(color: mode == 'Learn' ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Proficiency: ${percentage.toInt()}%", style: const TextStyle(color: Colors.white)),
+                        Text("Proficiency: ${percentage.toInt()}%", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                         Slider(
                           value: percentage,
                           min: 0,
                           max: 100,
                           divisions: 100,
                           activeColor: AppTheme.primaryPurple,
-                          inactiveColor: AppTheme.textGray,
+                          inactiveColor: Theme.of(context).colorScheme.onSurfaceVariant,
                           onChanged: (val) {
                             setDialogState(() {
                               percentage = val;
@@ -154,7 +154,7 @@ class _MySkillsState extends State<MySkills> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel", style: TextStyle(color: AppTheme.textGray)),
+                  child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryPurple),
@@ -178,7 +178,7 @@ class _MySkillsState extends State<MySkills> {
                     await _userRef.set(updatedSkills);
                     if (mounted) Navigator.pop(context);
                   },
-                  child: const Text("Save", style: TextStyle(color: Colors.white)),
+                  child: Text("Save", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ),
               ],
             );
@@ -197,26 +197,26 @@ class _MySkillsState extends State<MySkills> {
   @override
   Widget build(BuildContext context) {
     if (currentUser == null) {
-      return const Center(child: Text("Please login to view skills.", style: TextStyle(color: Colors.white)));
+      return Center(child: Text("Please login to view skills.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)));
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
+        ? Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
         : Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("My Skills", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                const SizedBox(height: 8),
-                const Text("Add your skills below so others can find and connect with you.", style: TextStyle(color: AppTheme.textGray)),
-                const SizedBox(height: 24),
+                Text("My Skills", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                SizedBox(height: 8),
+                Text("Add your skills below so others can find and connect with you.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                SizedBox(height: 24),
                 
                 Expanded(
                   child: _skills.isEmpty
-                      ? const Center(child: Text("No skills added yet.", style: TextStyle(color: AppTheme.textGray)))
+                      ? Center(child: Text("No skills added yet.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)))
                       : ListView.builder(
                           itemCount: _skills.length,
                           itemBuilder: (context, index) {
@@ -227,7 +227,7 @@ class _MySkillsState extends State<MySkills> {
                             final mode = skill['mode'] ?? 'Teach';
 
                             return Card(
-                              color: AppTheme.cardDark,
+                              color: Theme.of(context).cardColor,
                               margin: const EdgeInsets.only(bottom: 12),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                               child: Padding(
@@ -240,26 +240,26 @@ class _MySkillsState extends State<MySkills> {
                                       children: [
                                         Row(
                                           children: [
-                                            const CircleAvatar(
+                                            CircleAvatar(
                                               backgroundColor: AppTheme.primaryBlue,
                                               radius: 16,
-                                              child: Icon(Icons.star, color: Colors.white, size: 16),
+                                              child: Icon(Icons.star, color: Theme.of(context).colorScheme.onSurface, size: 16),
                                             ),
-                                            const SizedBox(width: 12),
-                                            Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                                            SizedBox(width: 12),
+                                            Text(name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 18)),
                                           ],
                                         ),
                                         Row(
                                           children: [
                                             IconButton(
-                                              icon: const Icon(Icons.edit, color: AppTheme.textGray),
+                                              icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.onSurfaceVariant),
                                               onPressed: () => _showAddEditSkillDialog(skill, index),
                                               padding: EdgeInsets.zero,
                                               constraints: const BoxConstraints(),
                                             ),
-                                            const SizedBox(width: 16),
+                                            SizedBox(width: 16),
                                             IconButton(
-                                              icon: const Icon(Icons.delete, color: Colors.redAccent),
+                                              icon: Icon(Icons.delete, color: Colors.redAccent),
                                               onPressed: () => _deleteSkill(index),
                                               padding: EdgeInsets.zero,
                                               constraints: const BoxConstraints(),
@@ -269,28 +269,28 @@ class _MySkillsState extends State<MySkills> {
                                       ],
                                     ),
                                     if (description.toString().isNotEmpty) ...[
-                                      const SizedBox(height: 8),
-                                      Text(description, style: const TextStyle(color: AppTheme.textGray, fontSize: 14)),
+                                      SizedBox(height: 8),
+                                      Text(description, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14)),
                                     ],
-                                    const SizedBox(height: 8),
+                                    SizedBox(height: 8),
                                     Chip(
                                       backgroundColor: mode == 'Teach' ? Colors.green : AppTheme.primaryBlue,
-                                      label: Text(mode == 'Teach' ? 'Want to Teach' : 'Want to Learn', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                                      label: Text(mode == 'Teach' ? 'Want to Teach' : 'Want to Learn', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
                                     ),
-                                    const SizedBox(height: 12),
+                                    SizedBox(height: 12),
                                     Row(
                                       children: [
                                         Expanded(
                                           child: LinearProgressIndicator(
                                             value: percentage / 100,
-                                            backgroundColor: AppTheme.darkBg,
+                                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                                             color: AppTheme.primaryPurple,
                                             minHeight: 8,
                                             borderRadius: BorderRadius.circular(4),
                                           ),
                                         ),
-                                        const SizedBox(width: 12),
-                                        Text("$percentage%", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                        SizedBox(width: 12),
+                                        Text("$percentage%", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                                       ],
                                     ),
                                   ],
@@ -306,8 +306,8 @@ class _MySkillsState extends State<MySkills> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppTheme.primaryPurple,
         onPressed: () => _showAddEditSkillDialog(),
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text("Add Skill", style: TextStyle(color: Colors.white)),
+        icon: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
+        label: Text("Add Skill", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
       ),
     );
   }

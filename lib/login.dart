@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
     if (emailController.text.isEmpty ||
         passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text("Please fill all fields"),
         ),
       );
@@ -102,14 +102,14 @@ if (!mounted) return;
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: Colors.white,
+              backgroundColor: Theme.of(context).colorScheme.onSurface,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: const Text("Reset Password", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
+              title: Text("Reset Password", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text("Enter your email address and we will send you a password reset link.", style: TextStyle(color: Colors.grey)),
-                  const SizedBox(height: 16),
+                  Text("Enter your email address and we will send you a password reset link.", style: TextStyle(color: Colors.grey)),
+                  SizedBox(height: 16),
                   TextField(
                     controller: resetEmailController,
                     keyboardType: TextInputType.emailAddress,
@@ -125,7 +125,7 @@ if (!mounted) return;
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+                  child: Text("Cancel", style: TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
@@ -136,15 +136,15 @@ if (!mounted) return;
                       await FirebaseAuth.instance.sendPasswordResetEmail(email: resetEmailController.text.trim());
                       if (!context.mounted) return;
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Password reset email sent! Check your inbox.", style: TextStyle(color: Colors.white)), backgroundColor: Colors.green));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Password reset email sent! Check your inbox.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)), backgroundColor: Colors.green));
                     } on FirebaseAuthException catch (e) {
                       setDialogState(() => isSending = false);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${e.message}", style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${e.message}", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)), backgroundColor: Colors.red));
                     }
                   },
                   child: isSending 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text("Send Link", style: TextStyle(color: Colors.white)),
+                      ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+                      : Text("Send Link", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ),
               ],
             );
@@ -166,10 +166,10 @@ if (!mounted) return;
         keyboardType: isPassword ? TextInputType.visiblePassword : TextInputType.emailAddress,
         controller: controller,
         obscureText: isPassword ? hidePassword : false,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: AppTheme.textGray),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
           filled: true,
           fillColor: Colors.white.withOpacity(0.05),
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
@@ -185,7 +185,7 @@ if (!mounted) return;
               ? IconButton(
                   icon: Icon(
                     hidePassword ? Icons.visibility_off : Icons.visibility,
-                    color: AppTheme.textGray,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   onPressed: () {
                     setState(() {
@@ -202,12 +202,12 @@ if (!mounted) return;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios, color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -219,13 +219,13 @@ if (!mounted) return;
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text("Smart Student Login", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-                  const SizedBox(height: 8),
-                  const Text("Login to your student dashboard and continue collaborating.", style: TextStyle(fontSize: 16, color: AppTheme.textGray)),
-                  const SizedBox(height: 32),
+                  Text("Smart Student Login", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  SizedBox(height: 8),
+                  Text("Login to your student dashboard and continue collaborating.", style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  SizedBox(height: 32),
                   Container(
                     padding: const EdgeInsets.all(24),
-                    decoration: AppTheme.glassBoxDecoration,
+                    decoration: AppTheme.glassBoxDecoration(context),
                     child: Column(
                       children: [
                         buildField(hint: "Email", controller: emailController),
@@ -234,10 +234,10 @@ if (!mounted) return;
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: resetPassword,
-                            child: const Text("Forgot Password?", style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold)),
+                            child: Text("Forgot Password?", style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         SizedBox(
                           width: double.infinity,
                           height: 55,
@@ -248,14 +248,14 @@ if (!mounted) return;
                             ),
                             onPressed: isLoading ? null : loginUser,
                             child: isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text("LOGIN", style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                                ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)
+                                : Text("LOGIN", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16),
                         TextButton(
                           onPressed: () => Navigator.pushNamed(context, '/register'),
-                          child: const Text("New here? Create account", style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold)),
+                          child: Text("New here? Create account", style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),

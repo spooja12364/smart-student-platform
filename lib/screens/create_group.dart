@@ -38,7 +38,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
           _isLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Please login to create a group.'),
             backgroundColor: Colors.red,
           ),
@@ -61,7 +61,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       if (groupId != null) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Group created successfully!'),
             backgroundColor: Colors.green,
           ),
@@ -70,7 +70,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       } else {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Failed to create group. Please try again.'),
             backgroundColor: Colors.red,
           ),
@@ -97,7 +97,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
-        title: const Text('Create Study Group'),
+        title: Text('Create Study Group'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -109,23 +109,23 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Start a new collaborative journey',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
-                const Text(
+                SizedBox(height: 8),
+                Text(
                   'Mentors teach up to 4 peers to maximize learning efficiency.',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 
                 // Group Name Field
                 _buildTextField(
@@ -140,7 +140,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Description Field
                 _buildTextField(
@@ -156,7 +156,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // Tags Field
                 _buildTextField(
@@ -171,7 +171,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 40),
+                SizedBox(height: 40),
 
                 // Submit Button
                 SizedBox(
@@ -181,15 +181,15 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                     onPressed: _isLoading ? null : _submitGroup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.onSurface,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 5,
                     ),
                     child: _isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
+                        ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)
+                        : Text(
                             'Create Group',
                             style: TextStyle(
                               fontSize: 18,
@@ -218,12 +218,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
       controller: controller,
       validator: validator,
       maxLines: maxLines,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: Colors.white70),
+        labelStyle: TextStyle(color: Colors.white70),
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white38),
+        hintStyle: TextStyle(color: Colors.white38),
         prefixIcon: Icon(icon, color: Colors.white70),
         filled: true,
         fillColor: const Color(0xFF1E1E1E), // Dark card color

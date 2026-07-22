@@ -19,29 +19,29 @@ class _ChatListPageState extends State<ChatListPage> {
   @override
   Widget build(BuildContext context) {
     if (user == null) {
-      return const Scaffold(
-        backgroundColor: AppTheme.darkBg,
-        body: Center(child: Text('Please login to view chats.', style: TextStyle(color: Colors.white))),
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Center(child: Text('Please login to view chats.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Chats", style: TextStyle(color: Colors.white)),
+        title: Text("Chats", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: StreamBuilder<DatabaseEvent>(
         stream: FirebaseDatabase.instance.ref('connections/${user!.uid}/accepted').onValue,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
+            return Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue));
           }
           if (!snapshot.hasData || snapshot.data!.snapshot.value == null) {
-            return const Center(
-              child: Text('No connections yet. Connect with people first.', style: TextStyle(color: AppTheme.textGray)),
+            return Center(
+              child: Text('No connections yet. Connect with people first.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
             );
           }
 
@@ -49,8 +49,8 @@ class _ChatListPageState extends State<ChatListPage> {
           final List<String> connectedUserIds = acceptedMap.keys.toList();
 
           if (connectedUserIds.isEmpty) {
-            return const Center(
-              child: Text('No connections yet. Connect with people first.', style: TextStyle(color: AppTheme.textGray)),
+            return Center(
+              child: Text('No connections yet. Connect with people first.', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
             );
           }
 
@@ -67,12 +67,12 @@ class _ChatListPageState extends State<ChatListPage> {
                 builder: (context, userSnapshot) {
                   if (!userSnapshot.hasData || userSnapshot.data!.snapshot.value == null) {
                     return ListTile(
-                      leading: const CircleAvatar(
+                      leading: CircleAvatar(
                         backgroundColor: AppTheme.primaryPurple,
-                        child: Icon(Icons.person, color: Colors.white),
+                        child: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurface),
                       ),
-                      title: const Text('Connected user', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                      subtitle: const Text('Tap to open chat', style: TextStyle(color: AppTheme.textGray)),
+                      title: Text('Connected user', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                      subtitle: Text('Tap to open chat', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -103,10 +103,10 @@ class _ChatListPageState extends State<ChatListPage> {
                         leading: CircleAvatar(
                           backgroundColor: AppTheme.primaryPurple,
                           backgroundImage: profileImage.isNotEmpty ? NetworkImage(profileImage) : null,
-                          child: profileImage.isEmpty ? const Icon(Icons.person, color: Colors.white) : null,
+                          child: profileImage.isEmpty ? Icon(Icons.person, color: Theme.of(context).colorScheme.onSurface) : null,
                         ),
-                        title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        subtitle: Text(subtitle, style: const TextStyle(color: AppTheme.textGray)),
+                        title: Text(name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                        subtitle: Text(subtitle, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -120,10 +120,10 @@ class _ChatListPageState extends State<ChatListPage> {
                                 ),
                                 child: Text(
                                   unreadCount.toString(),
-                                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12, fontWeight: FontWeight.bold),
                                 ),
                               ),
-                            const Icon(Icons.chevron_right, color: AppTheme.textGray),
+                            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ],
                         ),
                         onTap: () {
@@ -145,7 +145,7 @@ class _ChatListPageState extends State<ChatListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.primaryBlue,
-        child: const Icon(Icons.person_add, color: Colors.white),
+        child: Icon(Icons.person_add, color: Theme.of(context).colorScheme.onSurface),
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (_) => const Connections()));
         },

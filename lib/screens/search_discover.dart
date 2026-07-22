@@ -17,12 +17,12 @@ class _SearchDiscoverState extends State<SearchDiscover> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Discover", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text("Discover", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
         child: Padding(
@@ -30,13 +30,13 @@ class _SearchDiscoverState extends State<SearchDiscover> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextField(
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               decoration: InputDecoration(
                 hintText: "Search by name, skill, college...",
-                hintStyle: const TextStyle(color: AppTheme.textGray),
-                prefixIcon: const Icon(Icons.search, color: AppTheme.textGray),
+                hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.1),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
@@ -47,15 +47,15 @@ class _SearchDiscoverState extends State<SearchDiscover> {
                 });
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               children: [
                 _buildFilterChip("Users"),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 _buildFilterChip("Skills"),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             Expanded(
               child: _filter == "Users" ? _buildUserResults() : _buildSkillResults(),
             ),
@@ -68,10 +68,10 @@ class _SearchDiscoverState extends State<SearchDiscover> {
   Widget _buildFilterChip(String label) {
     bool isSelected = _filter == label;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(color: isSelected ? Colors.white : AppTheme.textGray)),
+      label: Text(label, style: TextStyle(color: isSelected ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant)),
       selected: isSelected,
       selectedColor: AppTheme.primaryPurple,
-      backgroundColor: AppTheme.cardDark,
+      backgroundColor: Theme.of(context).cardColor,
       onSelected: (val) {
         if (val) setState(() => _filter = label);
       },
@@ -82,7 +82,7 @@ class _SearchDiscoverState extends State<SearchDiscover> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('users').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
         
         final docs = snapshot.data!.docs.where((doc) {
           final data = doc.data() as Map<String, dynamic>;
@@ -97,9 +97,9 @@ class _SearchDiscoverState extends State<SearchDiscover> {
             final data = docs[index].data() as Map<String, dynamic>;
             return ListTile(
               contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              leading: const CircleAvatar(backgroundColor: AppTheme.primaryBlue, child: Icon(Icons.person, color: Colors.white)),
-              title: Text(data['fullName'] ?? "Unknown", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              subtitle: Text(data['collegeName'] ?? "No college specified", style: const TextStyle(color: AppTheme.textGray)),
+              leading: CircleAvatar(backgroundColor: AppTheme.primaryBlue, child: Icon(Icons.person, color: Theme.of(context).colorScheme.onSurface)),
+              title: Text(data['fullName'] ?? "Unknown", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+              subtitle: Text(data['collegeName'] ?? "No college specified", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => PublicProfilePage(userId: docs[index].id)));
               },
@@ -114,7 +114,7 @@ class _SearchDiscoverState extends State<SearchDiscover> {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('skills').snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
         
         final docs = snapshot.data!.docs.where((doc) {
           final data = doc.data() as Map<String, dynamic>;
@@ -129,11 +129,11 @@ class _SearchDiscoverState extends State<SearchDiscover> {
             final data = docs[index].data() as Map<String, dynamic>;
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
-              decoration: AppTheme.glassBoxDecoration,
+              decoration: AppTheme.glassBoxDecoration(context),
               child: ListTile(
-                title: Text(data['skillName'] ?? "", style: const TextStyle(color: Colors.white)),
-                subtitle: Text(data['category'] ?? "", style: const TextStyle(color: AppTheme.textGray)),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                title: Text(data['skillName'] ?? "", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                subtitle: Text(data['category'] ?? "", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                trailing: Icon(Icons.arrow_forward_ios, color: Theme.of(context).colorScheme.onSurface, size: 16),
               ),
             );
           },

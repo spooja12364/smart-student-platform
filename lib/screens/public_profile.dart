@@ -15,22 +15,22 @@ class PublicProfilePage extends StatelessWidget {
       builder: (context) {
         final reasonController = TextEditingController();
         return AlertDialog(
-          backgroundColor: AppTheme.cardDark,
-          title: const Text("Report User", style: TextStyle(color: Colors.redAccent)),
+          backgroundColor: Theme.of(context).cardColor,
+          title: Text("Report User", style: TextStyle(color: Colors.redAccent)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Why are you reporting this user?", style: TextStyle(color: Colors.white)),
-              const SizedBox(height: 10),
+              Text("Why are you reporting this user?", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+              SizedBox(height: 10),
               TextField(
                 controller: reasonController,
                 maxLines: 3,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white10,
                   hintText: "Enter reason...",
-                  hintStyle: const TextStyle(color: AppTheme.textGray),
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 ),
               ),
@@ -39,7 +39,7 @@ class PublicProfilePage extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel", style: TextStyle(color: AppTheme.textGray)),
+              child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
@@ -54,11 +54,11 @@ class PublicProfilePage extends StatelessWidget {
                   });
                   if (context.mounted) {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("User reported successfully. Our team will review this.")));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User reported successfully. Our team will review this.")));
                   }
                 }
               },
-              child: const Text("Submit Report"),
+              child: Text("Submit Report"),
             )
           ],
         );
@@ -78,7 +78,7 @@ class PublicProfilePage extends StatelessWidget {
     });
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("User has been blocked.")));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User has been blocked.")));
       Navigator.pop(context); // Go back
     }
   }
@@ -86,16 +86,16 @@ class PublicProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Student Profile", style: TextStyle(color: Colors.white)),
+        title: Text("Student Profile", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           PopupMenuButton<String>(
-            color: AppTheme.cardDark,
-            icon: const Icon(Icons.more_vert, color: Colors.white),
+            color: Theme.of(context).cardColor,
+            icon: Icon(Icons.more_vert, color: Theme.of(context).colorScheme.onSurface),
             onSelected: (value) {
               if (value == 'report') {
                 _reportUser(context);
@@ -114,10 +114,10 @@ class PublicProfilePage extends StatelessWidget {
         stream: FirebaseFirestore.instance.collection('users').doc(userId).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Center(child: Text("User not found.", style: TextStyle(color: Colors.white)));
+            return Center(child: Text("User not found.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)));
           }
 
           final data = snapshot.data!.data() as Map<String, dynamic>;
@@ -127,15 +127,15 @@ class PublicProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 50,
                   backgroundColor: AppTheme.primaryBlue,
-                  child: Icon(Icons.person, size: 50, color: Colors.white),
+                  child: Icon(Icons.person, size: 50, color: Theme.of(context).colorScheme.onSurface),
                 ),
-                const SizedBox(height: 16),
-                Text(data['fullName'] ?? "Student", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                Text(data['collegeName'] ?? "University", style: const TextStyle(color: AppTheme.textGray)),
-                const SizedBox(height: 24),
+                SizedBox(height: 16),
+                Text(data['fullName'] ?? "Student", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                Text(data['collegeName'] ?? "University", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                SizedBox(height: 24),
                 
                 // Action Buttons
                 Row(
@@ -165,52 +165,52 @@ class PublicProfilePage extends StatelessWidget {
 
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Connection request sent!"), backgroundColor: Colors.green),
+                              SnackBar(content: Text("Connection request sent!"), backgroundColor: Colors.green),
                             );
                           }
                         } catch (e) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Failed to send request."), backgroundColor: Colors.redAccent),
+                              SnackBar(content: Text("Failed to send request."), backgroundColor: Colors.redAccent),
                             );
                           }
                         }
                       },
-                      icon: const Icon(Icons.person_add),
-                      label: const Text("Connect"),
+                      icon: Icon(Icons.person_add),
+                      label: Text("Connect"),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.cardDark),
+                      style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).cardColor),
                       onPressed: () {
                         // Send Message Logic
                       },
-                      icon: const Icon(Icons.message),
-                      label: const Text("Message"),
+                      icon: Icon(Icons.message),
+                      label: Text("Message"),
                     ),
                   ],
                 ),
-                const SizedBox(height: 30),
+                SizedBox(height: 30),
 
                 // Details Card
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
-                  decoration: AppTheme.glassBoxDecoration,
+                  decoration: AppTheme.glassBoxDecoration(context),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("About", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
-                      const SizedBox(height: 8),
-                      Text(data['bio'] ?? "No bio available.", style: const TextStyle(color: Colors.white)),
+                      Text("About", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
+                      SizedBox(height: 8),
+                      Text(data['bio'] ?? "No bio available.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                       const Divider(color: Colors.white24, height: 30),
                       
-                      const Text("City", style: TextStyle(color: AppTheme.textGray)),
-                      Text(data['city'] ?? "Not specified", style: const TextStyle(color: Colors.white, fontSize: 16)),
-                      const SizedBox(height: 16),
+                      Text("City", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      Text(data['city'] ?? "Not specified", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
+                      SizedBox(height: 16),
                       
-                      const Text("Department", style: TextStyle(color: AppTheme.textGray)),
-                      Text(data['department'] ?? "Not specified", style: const TextStyle(color: Colors.white, fontSize: 16)),
+                      Text("Department", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      Text(data['department'] ?? "Not specified", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
                     ],
                   ),
                 )

@@ -11,12 +11,12 @@ class NotificationsPage extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      backgroundColor: AppTheme.darkBg,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Notifications", style: TextStyle(color: Colors.white)),
+        title: Text("Notifications", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -24,7 +24,7 @@ class NotificationsPage extends StatelessWidget {
             .where('userId', isEqualTo: user?.uid)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
+          if (!snapshot.hasData) return Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
 
           final docs = snapshot.data!.docs.toList();
           docs.sort((a, b) {
@@ -38,7 +38,7 @@ class NotificationsPage extends StatelessWidget {
             return bTime.compareTo(aTime);
           });
           if (docs.isEmpty) {
-            return const Center(child: Text("No notifications right now.", style: TextStyle(color: AppTheme.textGray)));
+            return Center(child: Text("No notifications right now.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)));
           }
 
           return ListView.builder(
@@ -46,7 +46,7 @@ class NotificationsPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final data = docs[index].data() as Map<String, dynamic>;
               IconData icon = Icons.notifications;
-              Color iconColor = Colors.white;
+              Color iconColor = Theme.of(context).colorScheme.onSurface;
 
               if (data['type'] == 'connection') {
                 icon = Icons.person_add;
@@ -61,14 +61,14 @@ class NotificationsPage extends StatelessWidget {
 
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: AppTheme.glassBoxDecoration,
+                decoration: AppTheme.glassBoxDecoration(context),
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: iconColor.withOpacity(0.2),
                     child: Icon(icon, color: iconColor),
                   ),
-                  title: Text(data['title'] ?? 'Notification', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  subtitle: Text(data['body'] ?? '', style: const TextStyle(color: AppTheme.textGray)),
+                  title: Text(data['title'] ?? 'Notification', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                  subtitle: Text(data['body'] ?? '', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                 ),
               );
             },
