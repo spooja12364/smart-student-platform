@@ -70,10 +70,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       });
 
       // FINALLY add a notification for the other user
-      String senderName = user?.displayName ?? 'A user';
-      if (user?.displayName == null || user!.displayName!.isEmpty) {
-        // try to get from our local state or just use a generic name
-        senderName = 'Someone';
+      String senderName = 'Someone';
+      if (user != null) {
+        if (user!.displayName != null && user!.displayName!.isNotEmpty) {
+          senderName = user!.displayName!;
+        } else {
+          try {
+            final userDoc = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
+            if (userDoc.exists && userDoc.data() != null) {
+              senderName = userDoc.data()!['fullName'] ?? userDoc.data()!['name'] ?? 'Someone';
+            }
+          } catch (_) {}
+        }
       }
       
       await FirebaseFirestore.instance.collection('notifications').add({

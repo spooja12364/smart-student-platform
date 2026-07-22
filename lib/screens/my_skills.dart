@@ -63,7 +63,6 @@ class _MySkillsState extends State<MySkills> {
   void _showAddEditSkillDialog([Map<dynamic, dynamic>? existingSkill, int? index]) {
     final TextEditingController nameController = TextEditingController(text: existingSkill?['name'] ?? '');
     final TextEditingController descController = TextEditingController(text: existingSkill?['description'] ?? '');
-    String mode = existingSkill?['mode']?.toString() ?? 'Teach';
     double percentage = (existingSkill?['percentage'] ?? 50.0).toDouble();
 
     showDialog(
@@ -107,27 +106,6 @@ class _MySkillsState extends State<MySkills> {
                       ),
                     ),
                     SizedBox(height: 16),
-                    Row(
-                      children: [
-                        ChoiceChip(
-                          label: Text('Teach'),
-                          selected: mode == 'Teach',
-                          onSelected: (_) => setDialogState(() => mode = 'Teach'),
-                          selectedColor: AppTheme.primaryPurple,
-                          backgroundColor: Theme.of(context).cardColor,
-                          labelStyle: TextStyle(color: mode == 'Teach' ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
-                        SizedBox(width: 12),
-                        ChoiceChip(
-                          label: Text('Learn'),
-                          selected: mode == 'Learn',
-                          onSelected: (_) => setDialogState(() => mode = 'Learn'),
-                          selectedColor: AppTheme.primaryPurple,
-                          backgroundColor: Theme.of(context).cardColor,
-                          labelStyle: TextStyle(color: mode == 'Learn' ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
-                      ],
-                    ),
                     SizedBox(height: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +144,6 @@ class _MySkillsState extends State<MySkills> {
                       'name': nameController.text.trim(),
                       'description': descController.text.trim(),
                       'percentage': percentage.toInt(),
-                      'mode': mode,
                     };
 
                     if (index != null) {
@@ -224,7 +201,6 @@ class _MySkillsState extends State<MySkills> {
                             final name = skill['name'] ?? 'Unknown';
                             final description = skill['description'] ?? '';
                             final percentage = skill['percentage'] ?? 50;
-                            final mode = skill['mode'] ?? 'Teach';
 
                             return Card(
                               color: Theme.of(context).cardColor,
@@ -272,11 +248,6 @@ class _MySkillsState extends State<MySkills> {
                                       SizedBox(height: 8),
                                       Text(description, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14)),
                                     ],
-                                    SizedBox(height: 8),
-                                    Chip(
-                                      backgroundColor: mode == 'Teach' ? Colors.green : AppTheme.primaryBlue,
-                                      label: Text(mode == 'Teach' ? 'Want to Teach' : 'Want to Learn', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
-                                    ),
                                     SizedBox(height: 12),
                                     Row(
                                       children: [

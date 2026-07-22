@@ -134,7 +134,11 @@ class PublicProfilePage extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 Text(data['fullName'] ?? "Student", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
-                Text(data['collegeName'] ?? "University", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(data['bio'] ?? "No bio available.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
+                ),
                 SizedBox(height: 24),
                 
                 // Action Buttons
@@ -192,7 +196,7 @@ class PublicProfilePage extends StatelessWidget {
                 ),
                 SizedBox(height: 30),
 
-                // Details Card
+                // Skills Card
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
@@ -200,17 +204,46 @@ class PublicProfilePage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("About", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
-                      SizedBox(height: 8),
-                      Text(data['bio'] ?? "No bio available.", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                      const Divider(color: Colors.white24, height: 30),
-                      
-                      Text("City", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                      Text(data['city'] ?? "Not specified", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
+                      Text("Skills", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryBlue)),
                       SizedBox(height: 16),
-                      
-                      Text("Department", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                      Text(data['department'] ?? "Not specified", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
+                      StreamBuilder(
+                        stream: FirebaseDatabase.instance.ref("users/$userId/skills").onValue,
+                        builder: (context, AsyncSnapshot<DatabaseEvent> skillSnapshot) {
+                          if (skillSnapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          if (!skillSnapshot.hasData || skillSnapshot.data!.snapshot.value == null) {
+                            return Text("No skills added yet.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant));
+                          }
+                          
+                          final skillsData = skillSnapshot.data!.snapshot.value;
+                          List<Map<dynamic, dynamic>> skillsList = [];
+                          if (skillsData is List) {
+                            skillsList = skillsData.where((e) => e != null).map((e) {
+                              if (e is Map) {
+                                return Map<dynamic, dynamic>.from(e);
+                              }
+                              return {'name': e.toString(), 'percentage': 50};
+                            }).toList();
+                          }
+                          
+                          if (skillsList.isEmpty) {
+                            return Text("No skills added yet.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant));
+                          }
+                          
+                          return Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: skillsList.map((skill) {
+                              return Chip(
+                                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                                label: Text(skill['name'] ?? '', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                                side: BorderSide(color: AppTheme.primaryPurple.withOpacity(0.5)),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 )
