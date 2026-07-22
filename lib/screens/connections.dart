@@ -261,6 +261,11 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
     );
   }
 
+  Future<void> _disconnect(String targetUid) async {
+    await FirebaseDatabase.instance.ref("connections/${currentUser!.uid}/accepted/$targetUid").remove();
+    await FirebaseDatabase.instance.ref("connections/$targetUid/accepted/${currentUser!.uid}").remove();
+  }
+
   Widget _buildActionButtons(String uid, String type, bool isConnected, [String? name]) {
     if (type == "Connected" || isConnected) {
       return Row(
@@ -285,6 +290,10 @@ class _ConnectionsState extends State<Connections> with SingleTickerProviderStat
                 ),
               );
             },
+          ),
+          IconButton(
+            icon: Icon(Icons.person_remove, color: Colors.redAccent),
+            onPressed: () => _disconnect(uid),
           ),
         ],
       );

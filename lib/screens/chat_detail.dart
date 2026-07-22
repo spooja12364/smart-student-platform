@@ -363,36 +363,59 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     );
   }
   Widget _buildMessageInput() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Theme.of(context).cardColor,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _msgController,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-              decoration: InputDecoration(
-                hintText: "Type a message...",
-                hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.05),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+    return StreamBuilder<DatabaseEvent>(
+      stream: FirebaseDatabase.instance.ref("connections/${user!.uid}/accepted/${widget.otherUserId}").onValue,
+      builder: (context, snapshot) {
+        bool isConnected = false;
+        if (snapshot.hasData && snapshot.data!.snapshot.value != null) {
+          isConnected = true;
+        }
+
+        if (!isConnected && snapshot.connectionState != ConnectionState.waiting) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            width: double.infinity,
+            color: Theme.of(context).cardColor,
+            child: Text(
+              "You must be connected to send messages.",
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+          );
+        }
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          color: Theme.of(context).cardColor,
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _msgController,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    hintText: "Type a message...",
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.05),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  ),
+                  onSubmitted: (val) => _sendMessage(text: val),
+                ),
               ),
-              onSubmitted: (val) => _sendMessage(text: val),
-            ),
+              SizedBox(width: 8),
+              CircleAvatar(
+                backgroundColor: AppTheme.primaryBlue,
+                child: IconButton(
+                  icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),
+                  onPressed: () => _sendMessage(text: _msgController.text),
+                ),
+              )
+            ],
           ),
-          SizedBox(width: 8),
-          CircleAvatar(
-            backgroundColor: AppTheme.primaryBlue,
-            child: IconButton(
-              icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),
-              onPressed: () => _sendMessage(text: _msgController.text),
-            ),
-          )
-        ],
-      ),
+        );
+      },
     );
   }
 }
