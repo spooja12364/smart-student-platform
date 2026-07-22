@@ -92,9 +92,11 @@ class _ChatListPageState extends State<ChatListPage> {
                     stream: FirebaseFirestore.instance.collection('chats').doc(chatId).snapshots(),
                     builder: (context, chatSnapshot) {
                       String subtitle = 'Start chatting';
+                      int unreadCount = 0;
                       if (chatSnapshot.hasData && chatSnapshot.data!.exists) {
                         final chatData = chatSnapshot.data!.data() as Map<String, dynamic>;
                         subtitle = chatData['lastMessage'] ?? 'Start chatting';
+                        unreadCount = chatData['unreadCount_${user!.uid}'] ?? 0;
                       }
 
                       return ListTile(
@@ -105,7 +107,25 @@ class _ChatListPageState extends State<ChatListPage> {
                         ),
                         title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                         subtitle: Text(subtitle, style: const TextStyle(color: AppTheme.textGray)),
-                        trailing: const Icon(Icons.chevron_right, color: AppTheme.textGray),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (unreadCount > 0)
+                              Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  unreadCount.toString(),
+                                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            const Icon(Icons.chevron_right, color: AppTheme.textGray),
+                          ],
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,

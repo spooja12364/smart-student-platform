@@ -8,10 +8,11 @@ allprojects {
 subprojects {
     if (name != "app") {
         extra.set("flutter", mapOf(
-            "compileSdkVersion" to 35,
+            "compileSdkVersion" to 36,
             "minSdkVersion" to 23,
             "targetSdkVersion" to 35,
-            "buildToolsVersion" to "34.0.0"
+            "buildToolsVersion" to "34.0.0",
+            "ndkVersion" to "27.0.12077973"
         ))
     }
     afterEvaluate {

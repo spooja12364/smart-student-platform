@@ -30,6 +30,7 @@ dependencies:
   flutter_linkify: any
   url_launcher: any
   file_picker: ^8.1.4
+  firebase_ai: ^3.14.1
 
 dev_dependencies:
   flutter_test:

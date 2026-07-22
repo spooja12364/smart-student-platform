@@ -16,13 +16,20 @@ class _SearchDiscoverState extends State<SearchDiscover> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Discover", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+    return Scaffold(
+      backgroundColor: AppTheme.darkBg,
+      appBar: AppBar(
+        title: const Text("Discover", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             const SizedBox(height: 16),
             TextField(
               style: const TextStyle(color: Colors.white),
@@ -55,7 +62,7 @@ class _SearchDiscoverState extends State<SearchDiscover> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildFilterChip(String label) {

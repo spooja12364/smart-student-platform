@@ -30,6 +30,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   bool _isUploading = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Reset unread count when opening the chat
+    if (user != null) {
+      FirebaseFirestore.instance.collection('chats').doc(widget.chatId).set({
+        'unreadCount_${user!.uid}': 0,
+      }, SetOptions(merge: true));
+    }
+  }
+
+  @override
   void dispose() {
     _msgController.dispose();
     super.dispose();
@@ -47,6 +58,8 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         'lastMessage': msgText,
         'lastUpdated': FieldValue.serverTimestamp(),
         'participants': FieldValue.arrayUnion([user?.uid, widget.otherUserId]),
+        'unreadCount_${widget.otherUserId}': FieldValue.increment(1),
+        'lastMessageSenderId': user?.uid,
       }, SetOptions(merge: true));
 
       // THEN add the message
@@ -54,6 +67,23 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         'senderId': user?.uid,
         'text': msgText,
         'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      // FINALLY add a notification for the other user
+      String senderName = user?.displayName ?? 'A user';
+      if (user?.displayName == null || user!.displayName!.isEmpty) {
+        // try to get from our local state or just use a generic name
+        senderName = 'Someone';
+      }
+      
+      await FirebaseFirestore.instance.collection('notifications').add({
+        'userId': widget.otherUserId,
+        'type': 'message',
+        'title': 'New message from $senderName',
+        'body': msgText.length > 30 ? '${msgText.substring(0, 30)}...' : msgText,
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false,
+        'senderId': user?.uid,
       });
     } catch (e) {
       if (mounted) {

@@ -22,12 +22,21 @@ class NotificationsPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('notifications')
             .where('userId', isEqualTo: user?.uid)
-            .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple));
 
-          final docs = snapshot.data!.docs;
+          final docs = snapshot.data!.docs.toList();
+          docs.sort((a, b) {
+            final aData = a.data() as Map<String, dynamic>;
+            final bData = b.data() as Map<String, dynamic>;
+            final aTime = aData['createdAt'] as Timestamp?;
+            final bTime = bData['createdAt'] as Timestamp?;
+            if (aTime == null && bTime == null) return 0;
+            if (aTime == null) return 1;
+            if (bTime == null) return -1;
+            return bTime.compareTo(aTime);
+          });
           if (docs.isEmpty) {
             return const Center(child: Text("No notifications right now.", style: TextStyle(color: AppTheme.textGray)));
           }

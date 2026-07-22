@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:smart_student_platform/theme.dart';
 
 class PublicProfilePage extends StatelessWidget {
@@ -142,8 +143,38 @@ class PublicProfilePage extends StatelessWidget {
                   children: [
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryPurple),
-                      onPressed: () {
-                        // Send Connection Logic
+                      onPressed: () async {
+                        final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+                        if (currentUserId == null) return;
+                        final currentUserName = FirebaseAuth.instance.currentUser?.displayName ?? 'Someone';
+
+                        try {
+                          // 1. Send Connection Request via RTDB
+                          await FirebaseDatabase.instance.ref("connections/$userId/requests/$currentUserId").set(true);
+
+                          // 2. Send Notification via Firestore
+                          await FirebaseFirestore.instance.collection('notifications').add({
+                            'userId': userId,
+                            'type': 'connection',
+                            'title': 'New Connection Request',
+                            'body': '$currentUserName wants to connect with you.',
+                            'createdAt': FieldValue.serverTimestamp(),
+                            'read': false,
+                            'senderId': currentUserId,
+                          });
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Connection request sent!"), backgroundColor: Colors.green),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Failed to send request."), backgroundColor: Colors.redAccent),
+                            );
+                          }
+                        }
                       },
                       icon: const Icon(Icons.person_add),
                       label: const Text("Connect"),
