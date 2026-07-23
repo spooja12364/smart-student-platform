@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, auth, storage } from '../firebase';
-import { Send, Image as ImageIcon, Mic, Square } from 'lucide-react';
+import { Send, Image as ImageIcon, Video as VideoIcon, Mic, Square } from 'lucide-react';
 
 export default function ChatDetail() {
   const { chatId } = useParams();
@@ -39,7 +39,7 @@ export default function ChatDetail() {
     });
 
     await setDoc(doc(db, 'chats', chatId), {
-      lastMessage: messageData.text || (messageData.imageUrl ? '📷 Photo' : '🎤 Voice Note'),
+      lastMessage: messageData.text || (messageData.imageUrl ? '📷 Photo' : messageData.videoUrl ? '🎥 Video' : '🎤 Voice Note'),
       lastUpdated: serverTimestamp(),
     }, { merge: true });
   };
@@ -63,6 +63,24 @@ export default function ChatDetail() {
     } catch (err) {
       console.error(err);
       alert('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleVideoUpload = async (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file || !chatId) return;
+    
+    setUploading(true);
+    try {
+      const storageRef = ref(storage, `chat_videos/${chatId}/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const videoUrl = await getDownloadURL(storageRef);
+      await sendMessage({ videoUrl });
+    } catch (err) {
+      console.error(err);
+      alert('Failed to upload video');
     } finally {
       setUploading(false);
     }
@@ -125,6 +143,13 @@ export default function ChatDetail() {
               <div className={`max-w-[70%] p-4 rounded-2xl ${isMe ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-secondary text-secondary-foreground rounded-tl-sm shadow-md'}`}>
                 {m.text && <p className="text-sm">{m.text}</p>}
                 {m.imageUrl && <img src={m.imageUrl} alt="uploaded" className="max-w-full rounded-lg mt-2" />}
+                {m.videoUrl && (
+                  <video controls className="max-w-full rounded-lg mt-2 max-h-64">
+                    <source src={m.videoUrl} type="video/mp4" />
+                    <source src={m.videoUrl} type="video/webm" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
                 {m.audioUrl && (
                   <audio controls className="mt-2 h-10">
                     <source src={m.audioUrl} type="audio/webm" />
@@ -142,12 +167,17 @@ export default function ChatDetail() {
       <div className="p-4 border-t border-border/50 bg-card/80 backdrop-blur-md">
         {uploading && <div className="text-xs text-primary mb-2 font-medium animate-pulse">Uploading media...</div>}
         <div className="flex items-center space-x-2">
-          <label className="p-3 rounded-xl bg-secondary/50 hover:bg-secondary cursor-pointer transition-colors text-muted-foreground hover:text-foreground">
+          <label className="p-3 rounded-xl bg-secondary/50 hover:bg-secondary cursor-pointer transition-colors text-muted-foreground hover:text-foreground" title="Upload Photo">
             <ImageIcon className="w-5 h-5" />
             <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
           </label>
+          <label className="p-3 rounded-xl bg-secondary/50 hover:bg-secondary cursor-pointer transition-colors text-muted-foreground hover:text-foreground" title="Upload Video">
+            <VideoIcon className="w-5 h-5" />
+            <input type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
+          </label>
           <button 
             onClick={toggleRecording} 
+            title="Voice Note"
             className={`p-3 rounded-xl transition-all ${isRecording ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground'}`}
           >
             {isRecording ? <Square className="w-5 h-5 fill-current" /> : <Mic className="w-5 h-5" />}

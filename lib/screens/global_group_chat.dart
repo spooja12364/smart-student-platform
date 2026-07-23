@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_student_platform/theme.dart';
 
 class GlobalGroupChat extends StatefulWidget {
@@ -16,6 +22,7 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
   final ScrollController _scrollController = ScrollController();
   String _userName = "User";
+  bool _isUploading = false;
 
   @override
   void initState() {
@@ -52,6 +59,98 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
 
     _messageController.clear();
     _scrollToBottom();
+  }
+
+  Future<String> _uploadMediaBytes(Uint8List bytes, String path, String mimeType) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child(path);
+      final uploadTask = storageRef.putData(bytes, SettableMetadata(contentType: mimeType));
+      final snapshot = await uploadTask.timeout(const Duration(seconds: 6));
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint("Global Storage upload timeout/CORS error ($e), using base64 fallback");
+      return "data:$mimeType;base64,${base64Encode(bytes)}";
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    if (image == null || currentUser == null) return;
+
+    setState(() => _isUploading = true);
+    try {
+      final path = 'global_chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final Uint8List bytes = await image.readAsBytes();
+      final String downloadUrl = await _uploadMediaBytes(bytes, path, 'image/jpeg');
+
+      final newMessageRef = _chatRef.push();
+      newMessageRef.set({
+        "messageId": newMessageRef.key,
+        "uid": currentUser!.uid,
+        "sender": _userName,
+        "imageUrl": downloadUrl,
+        "timestamp": ServerValue.timestamp,
+      });
+      _scrollToBottom();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload image: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  Future<void> _pickAndUploadVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery, maxDuration: const Duration(minutes: 5));
+    if (video == null || currentUser == null) return;
+
+    setState(() => _isUploading = true);
+    try {
+      final path = 'global_chat_videos/${DateTime.now().millisecondsSinceEpoch}.mp4';
+      final Uint8List bytes = await video.readAsBytes();
+      final String downloadUrl = await _uploadMediaBytes(bytes, path, 'video/mp4');
+
+      final newMessageRef = _chatRef.push();
+      newMessageRef.set({
+        "messageId": newMessageRef.key,
+        "uid": currentUser!.uid,
+        "sender": _userName,
+        "videoUrl": downloadUrl,
+        "timestamp": ServerValue.timestamp,
+      });
+      _scrollToBottom();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload video: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  Future<void> _playOrOpenVideo(String videoUrl) async {
+    try {
+      final Uri uri = Uri.parse(videoUrl);
+      if (videoUrl.startsWith('data:') || kIsWeb) {
+        await launchUrl(uri);
+      } else {
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          await launchUrl(uri);
+        }
+      }
+    } catch (e) {
+      debugPrint("Error opening video: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Could not open video: $e")),
+        );
+      }
+    }
   }
 
   void _scrollToBottom() {
@@ -105,6 +204,9 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
                 itemBuilder: (context, index) {
                   final msg = messages[index];
                   final bool isMe = msg['uid'] == currentUser?.uid;
+                  final String? imageUrl = msg['imageUrl'];
+                  final String? videoUrl = msg['videoUrl'];
+                  final String? textMsg = msg['message'];
 
                   final timestamp = msg['timestamp'];
                   final DateTime? time = timestamp is int ? DateTime.fromMillisecondsSinceEpoch(timestamp) : null;
@@ -133,13 +235,63 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
                               msg['sender'] ?? 'Unknown',
                               style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold),
                             ),
-                          SizedBox(height: 4),
-                          Text(
-                            msg['message'] ?? '',
-                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15),
-                          ),
+                          if (imageUrl != null) ...[
+                            const SizedBox(height: 4),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.network(
+                                imageUrl,
+                                width: 200,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return SizedBox(width: 200, height: 200, child: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)));
+                                },
+                              ),
+                            ),
+                          ],
+                          if (videoUrl != null) ...[
+                            const SizedBox(height: 4),
+                            InkWell(
+                              onTap: () => _playOrOpenVideo(videoUrl),
+                              child: Container(
+                                width: 200,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.black26,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: AppTheme.primaryPurple,
+                                      child: const Icon(Icons.play_arrow, color: Colors.white, size: 20),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    const Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Video Clip', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                          Text('Tap to play', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (textMsg != null && textMsg.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              textMsg,
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15),
+                            ),
+                          ],
                           if (timeString.isNotEmpty) ...[
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               timeString,
                               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.9), fontSize: 11),
@@ -154,11 +306,34 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
             },
           ),
         ),
+        if (_isUploading)
+          Container(
+            color: Theme.of(context).cardColor,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: Row(
+              children: [
+                SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryPurple)),
+                const SizedBox(width: 8),
+                Text('Uploading media...', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
+              ],
+            ),
+          ),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           color: Theme.of(context).cardColor,
           child: Row(
             children: [
+              IconButton(
+                icon: Icon(Icons.photo_camera, color: AppTheme.primaryPurple, size: 22),
+                tooltip: 'Send Photo',
+                onPressed: _isUploading ? null : _pickAndUploadImage,
+              ),
+              IconButton(
+                icon: Icon(Icons.videocam, color: AppTheme.primaryPurple, size: 22),
+                tooltip: 'Send Video',
+                onPressed: _isUploading ? null : _pickAndUploadVideo,
+              ),
+              const SizedBox(width: 4),
               Expanded(
                 child: TextField(
                   controller: _messageController,
@@ -174,11 +349,12 @@ class _GlobalGroupChatState extends State<GlobalGroupChat> {
                       borderSide: BorderSide.none,
                     ),
                   ),
+                  onSubmitted: (_) => _sendMessage(),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 8),
               CircleAvatar(
-                radius: 24,
+                radius: 22,
                 backgroundColor: AppTheme.primaryPurple,
                 child: IconButton(
                   icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -54,8 +55,8 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
     super.dispose();
   }
 
-  void _sendMessage({String? text, String? imageUrl, String? audioUrl}) async {
-    if ((text == null || text.trim().isEmpty) && imageUrl == null && audioUrl == null) return;
+  void _sendMessage({String? text, String? imageUrl, String? videoUrl, String? audioUrl}) async {
+    if ((text == null || text.trim().isEmpty) && imageUrl == null && videoUrl == null && audioUrl == null) return;
 
     final msgText = text?.trim() ?? "";
     _msgController.clear();
@@ -65,15 +66,28 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
       'senderName': user?.email ?? 'Unknown', // Ideally fetched from DB
       'text': msgText.isNotEmpty ? msgText : null,
       'imageUrl': imageUrl,
+      'videoUrl': videoUrl,
       'audioUrl': audioUrl,
       'timestamp': FieldValue.serverTimestamp(),
     });
 
     await FirebaseFirestore.instance.collection('groups').doc(widget.groupId).set({
-      'lastMessage': audioUrl != null ? '🎤 Voice Note' : imageUrl != null ? '📷 Photo' : msgText,
+      'lastMessage': videoUrl != null ? '🎥 Video' : audioUrl != null ? '🎤 Voice Note' : imageUrl != null ? '📷 Photo' : msgText,
       'lastUpdated': FieldValue.serverTimestamp(),
       'participants': FieldValue.arrayUnion([user?.uid]),
     }, SetOptions(merge: true));
+  }
+
+  Future<String> _uploadMediaBytes(Uint8List bytes, String path, String mimeType) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child(path);
+      final uploadTask = storageRef.putData(bytes, SettableMetadata(contentType: mimeType));
+      final snapshot = await uploadTask.timeout(const Duration(seconds: 6));
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint("Group Storage upload timeout/CORS error ($e), using base64 fallback");
+      return "data:$mimeType;base64,${base64Encode(bytes)}";
+    }
   }
 
   Future<void> _pickAndUploadImage() async {
@@ -85,14 +99,35 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
     setState(() => _isUploading = true);
     
     try {
-      final storageRef = FirebaseStorage.instance.ref().child('group_images/${widget.groupId}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final path = 'group_images/${widget.groupId}/${DateTime.now().millisecondsSinceEpoch}.jpg';
       final Uint8List bytes = await image.readAsBytes();
-      await storageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
-      final String downloadUrl = await storageRef.getDownloadURL();
+      final String downloadUrl = await _uploadMediaBytes(bytes, path, 'image/jpeg');
       _sendMessage(imageUrl: downloadUrl);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload image: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
+  Future<void> _pickAndUploadVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery, maxDuration: const Duration(minutes: 5));
+    
+    if (video == null) return;
+    
+    setState(() => _isUploading = true);
+    
+    try {
+      final path = 'group_videos/${widget.groupId}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+      final Uint8List bytes = await video.readAsBytes();
+      final String downloadUrl = await _uploadMediaBytes(bytes, path, 'video/mp4');
+      _sendMessage(videoUrl: downloadUrl);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to upload video: $e')));
       }
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -146,6 +181,28 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
     }
   }
 
+  Future<void> _playOrOpenVideo(String videoUrl) async {
+    try {
+      final Uri uri = Uri.parse(videoUrl);
+      if (videoUrl.startsWith('data:') || kIsWeb) {
+        await launchUrl(uri);
+      } else {
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          await launchUrl(uri);
+        }
+      }
+    } catch (e) {
+      debugPrint("Error opening video: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Could not open video: $e")),
+        );
+      }
+    }
+  }
+
   Future<void> _playAudio(String url) async {
     if (_currentPlayingUrl == url && _isPlaying) {
       await _audioPlayer.pause();
@@ -194,6 +251,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                     final data = docs[index].data() as Map<String, dynamic>;
                     bool isMe = data['senderId'] == user?.uid;
                     String? imageUrl = data['imageUrl'];
+                    String? videoUrl = data['videoUrl'];
                     String? text = data['text'];
                     String? audioUrl = data['audioUrl'];
 
@@ -230,6 +288,46 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                                   },
                                 ),
                               ),
+                            if (videoUrl != null)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: InkWell(
+                                  onTap: () => _playOrOpenVideo(videoUrl),
+                                  child: Container(
+                                    width: 200,
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black26,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 18,
+                                          backgroundColor: AppTheme.primaryPurple,
+                                          child: const Icon(Icons.play_arrow, color: Colors.white, size: 20),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        const Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Video Clip',
+                                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                                              ),
+                                              Text(
+                                                'Tap to play',
+                                                style: TextStyle(color: Colors.white70, fontSize: 11),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
                             if (audioUrl != null)
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -251,7 +349,7 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
                               ),
                             if (text != null && text.isNotEmpty)
                               Padding(
-                                padding: EdgeInsets.only(top: imageUrl != null ? 8 : 0, left: imageUrl != null ? 8 : 0, right: imageUrl != null ? 8 : 0, bottom: imageUrl != null ? 4 : 0),
+                                padding: EdgeInsets.only(top: (imageUrl != null || videoUrl != null) ? 8 : 0, left: imageUrl != null ? 8 : 0, right: imageUrl != null ? 8 : 0, bottom: imageUrl != null ? 4 : 0),
                                 child: Linkify(
                                   onOpen: (link) async {
                                     final Uri url = Uri.parse(link.url);
@@ -292,7 +390,13 @@ class _GroupChatDetailPageState extends State<GroupChatDetailPage> {
         children: [
           IconButton(
             icon: Icon(Icons.image, color: AppTheme.primaryPurple),
-            onPressed: _pickAndUploadImage,
+            tooltip: 'Send Photo',
+            onPressed: _isUploading ? null : _pickAndUploadImage,
+          ),
+          IconButton(
+            icon: Icon(Icons.videocam, color: AppTheme.primaryPurple),
+            tooltip: 'Send Video',
+            onPressed: _isUploading ? null : _pickAndUploadVideo,
           ),
           IconButton(
             icon: Icon(
